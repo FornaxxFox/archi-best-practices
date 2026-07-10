@@ -14,6 +14,7 @@ npm run dev
 - `/`：研究入口与短 Prompt 模板
 - `/cases`：案例库、筛选、案例详情和资料包下载
 - `/boards`：本地收藏、评分和 Wish List
+- `/project`：项目理念、任务、代码地图、预期和 Milestones
 - `/mcp`：MCP 工具说明与可运行 Playground
 - `/api/mcp`：无鉴权 MCP HTTP Endpoint
 
@@ -24,6 +25,12 @@ npm run dev
 ## 案例生产
 
 可复用的案例生产 Skill 在 [`skills/case-production/SKILL.md`](skills/case-production/SKILL.md)，规定了来源采集、结构化、设计理念提取、引用核验和资料包输出流程。
+
+## 项目文档
+
+- [项目理念、任务与预期](docs/PROJECT.md)
+- [代码与架构](docs/ARCHITECTURE.md)
+- [Milestones](docs/MILESTONES.md)
 
 ## 开源贡献
 
@@ -38,4 +45,3 @@ npm run build
 npm test
 npm run lint
 ```
-

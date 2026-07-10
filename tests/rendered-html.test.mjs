@@ -32,6 +32,16 @@ test("server-renders the MCP page", async () => {
   assert.match(html, /search_cases/);
 });
 
+test("server-renders the project narrative page", async () => {
+  const response = await render("/project");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /ABOUT THE PROJECT/);
+  assert.match(html, /代码应该让理念可执行/);
+  assert.match(html, /MILESTONES/);
+  assert.match(html, /生产级知识基础设施/);
+});
+
 test("MCP endpoint returns tool definitions and case data", async () => {
   const response = await render("/api/mcp");
   assert.equal(response.status, 200);
@@ -39,4 +49,3 @@ test("MCP endpoint returns tool definitions and case data", async () => {
   assert.equal(body.name, "archlens");
   assert.match(body.endpoint, /\/api\/mcp/);
 });
-

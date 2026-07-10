@@ -17,6 +17,9 @@ export type CaseStudy = {
   sources: { label: string; url: string }[];
   risks: string[];
   tags: string[];
+  context?: string;
+  researchQuestions?: string[];
+  materialNotes?: string;
 }
 
 export const cases: CaseStudy[] = [
@@ -39,6 +42,9 @@ export const cases: CaseStudy[] = [
     sources: [{ label: "Zaha Hadid Architects 项目页", url: "https://www.zaha-hadid.com/architecture/heydar-aliyev-centre/" }],
     risks: ["连续曲面需要高精度节点与施工协同", "形式语言不能替代公共活动运营"],
     tags: ["公共地景", "流线", "连续曲面"],
+    context: "项目把一座文化中心放在城市广场与公共活动之间，重点不只是建筑造型，而是重新定义进入、停留和穿行。",
+    researchQuestions: ["公共地面如何变成建筑的一部分？", "连续流线如何服务不同强度的公共活动？"],
+    materialNotes: "白色复合外皮、连续曲面、低视觉干扰的广场界面。",
   },
   {
     id: "maxxi",
@@ -59,6 +65,9 @@ export const cases: CaseStudy[] = [
     sources: [{ label: "MAXXI 官方项目页", url: "https://www.maxxi.art/en/" }, { label: "Zaha Hadid Architects", url: "https://www.zaha-hadid.com/architecture/maxxi/" }],
     risks: ["复杂流线需要清晰的导视系统", "开放展厅对声学和运营要求较高"],
     tags: ["展览", "流线", "可变空间"],
+    context: "MAXXI 面对的是艺术展示不断变化的问题，因此空间框架比固定展厅形状更重要。",
+    researchQuestions: ["展览路径如何影响观看顺序？", "可变空间需要哪些导视和声环境条件？"],
+    materialNotes: "混凝土、钢、黑色天花和顶部采光带共同形成方向感。",
   },
   {
     id: "vitra-fire-station",
@@ -79,6 +88,9 @@ export const cases: CaseStudy[] = [
     sources: [{ label: "Zaha Hadid Architects 项目页", url: "https://www.zaha-hadid.com/architecture/vitra-fire-station/" }],
     risks: ["空间的开放性可能削弱后勤收纳效率", "强烈的形态需要明确的使用逻辑支撑"],
     tags: ["响应", "线性", "构造"],
+    context: "消防站把即时响应作为首要任务，建筑的线性构件和开放场地都围绕行动速度组织。",
+    researchQuestions: ["如何把运营逻辑转译为空间秩序？", "强烈形式如何避免干扰后勤效率？"],
+    materialNotes: "灰色混凝土、折线墙体和连续地面共同构成紧张的线性空间。",
   },
   {
     id: "8-house",
@@ -99,6 +111,9 @@ export const cases: CaseStudy[] = [
     sources: [{ label: "BIG 官方项目页", url: "https://big.dk/projects/8-house-2021" }],
     risks: ["混合功能需要清楚的共享空间管理", "连续坡道的无障碍和排水必须同步设计"],
     tags: ["混合功能", "社区", "坡道"],
+    context: "8 House 试图把办公、商业和居住放进同一个可步行的社区框架，研究重点是混合功能如何产生额外公共价值。",
+    researchQuestions: ["混合功能如何共享公共空间？", "连续坡道如何同时承担社交、无障碍和交通？"],
+    materialNotes: "砖、玻璃、绿色屋面和连续外部路径共同形成生活化的街区尺度。",
   },
   {
     id: "chichu-art-museum",
@@ -119,6 +134,9 @@ export const cases: CaseStudy[] = [
     sources: [{ label: "Benesse Art Site 官方项目页", url: "https://benesse-artsite.jp/en/art/chichu.html" }],
     risks: ["地下空间依赖精准的采光、排水和防潮", "过度克制可能降低首次到访者的可识别性"],
     tags: ["场地", "自然光", "地下"],
+    context: "Chichu Art Museum 把建筑大部分隐藏在地下，以最小的地表介入保护直岛环境，并让自然光参与作品体验。",
+    researchQuestions: ["隐身的建筑如何保持公共可达性？", "自然光如何成为空间和展览的共同材料？"],
+    materialNotes: "清水混凝土、天井、阴影和经过控制的自然光。",
   },
   {
     id: "harbin-opera-house",
@@ -139,6 +157,9 @@ export const cases: CaseStudy[] = [
     sources: [{ label: "MAD Architects 项目资料", url: "https://www.i-mad.com/work/harbin-opera-house/" }],
     risks: ["寒地维护成本与结冰风险需要前置评估", "外壳复杂度会显著影响建造预算"],
     tags: ["寒地", "地貌", "公共屋顶"],
+    context: "哈尔滨歌剧院把寒地滨水环境当作建筑的起点，公共路径、观景平台和剧场外壳被组织成连续地形。",
+    researchQuestions: ["寒地气候如何改变公共空间的开放方式？", "复杂外壳如何同时承担识别与维护？"],
+    materialNotes: "白色外壳、折叠表皮、石材和大尺度公共台阶。",
   },
   {
     id: "rolex-learning-centre",
@@ -159,6 +180,9 @@ export const cases: CaseStudy[] = [
     sources: [{ label: "EPFL 官方项目页", url: "https://www.epfl.ch/campus/visitors/en/rolex-learning-center/" }],
     risks: ["开放平面需要高质量声环境分区", "流动空间要有足够的家具和标识支撑使用"],
     tags: ["学习", "连续空间", "开放平面"],
+    context: "Rolex Learning Center 把学习、交流和休息放在一个没有明确房间边界的连续平面中，公共性来自空间的可选择性。",
+    researchQuestions: ["开放平面如何支持不同专注程度？", "微地形如何替代传统房间分隔？"],
+    materialNotes: "浅色地面、柔性家具、天井和连续起伏的室内地形。",
   },
   {
     id: "sendai-mediatheque",
@@ -179,6 +203,9 @@ export const cases: CaseStudy[] = [
     sources: [{ label: "Sendai Mediatheque 官方资料", url: "https://www.smt.jp/en/" }],
     risks: ["系统集成需要长期维护策略", "透明界面与开放结构对热舒适提出更高要求"],
     tags: ["基础设施", "媒体", "透明"],
+    context: "Sendai Mediatheque 用结构管承载交通、设备和环境系统，让楼板保持自由，把建筑变成可持续变化的城市客厅。",
+    researchQuestions: ["基础设施如何成为空间而不是隐藏在空间之后？", "透明开放的公共建筑如何处理热舒适和维护？"],
+    materialNotes: "钢结构管、玻璃幕墙、自由平面和可变媒体设施。",
   },
 ];
 
@@ -202,4 +229,3 @@ export const mcpTools = [
 export function findCase(id: string) {
   return cases.find((item) => item.id === id);
 }
-

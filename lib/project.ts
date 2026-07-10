@@ -1,0 +1,57 @@
+export const projectPrinciples = [
+  {
+    index: "01",
+    title: "先理解，再生成",
+    body: "ArchLens 不把建筑研究压缩成一张漂亮的效果图。我们先保留原始材料、来源和上下文，再把设计判断拆成可阅读、可比较、可复用的结构。",
+    action: "每条结论都要能回到一个项目、一条来源或一个明确的编辑判断。",
+  },
+  {
+    index: "02",
+    title: "把案例当作方法",
+    body: "案例不是风格图鉴，而是解决问题的方法记录。我们关注它如何回应场地、组织公共性、处理材料和承担风险。",
+    action: "案例资料卡同时呈现理念、策略、元素、适用条件和不可复制之处。",
+  },
+  {
+    index: "03",
+    title: "开放给人的工具，也开放给 Agent",
+    body: "网站服务设计师的阅读和判断，MCP 服务外部 Agent 的检索和上下文获取。两者共享同一份结构化知识，不绑定任何模型供应商。",
+    action: "优先建设稳定 schema、来源追踪和可下载资料包，再扩展更复杂的 AI 工作流。",
+  },
+  {
+    index: "04",
+    title: "把内容生产变成共同建设",
+    body: "真正的壁垒不是一次性生成，而是持续累积一套可信的案例生产机制。任何人都可以提出 Wish List、提交案例或改进 Skill。",
+    action: "用 GitHub Issue、PR、Skill 和 CI 把贡献路径做成公开协议。",
+  },
+];
+
+export const projectTracks = [
+  { label: "内容任务", title: "建立可追溯的案例库", body: "从知名建筑、城市和规划案例开始，补齐原始来源、设计理念、空间策略、元素、材料、颜色和局限。" },
+  { label: "产品任务", title: "让研究在三分钟内开始", body: "用短 Prompt、任务模板、快速筛选、案例对比和资料包下载，把第一次使用的门槛降到最低。" },
+  { label: "基础设施任务", title: "提供稳定的 MCP 知识入口", body: "让 Claude、Cursor 或其他 Agent 可以检索案例、获取结构化资料、比较项目并继续完成自己的工作。" },
+  { label: "社区任务", title: "形成可持续的开放协作", body: "通过案例生产 Skill、Wish List 和 GitHub 模板，把内容维护从个人劳动变成可复用的社区流程。" },
+];
+
+export const projectExpectations = [
+  { label: "对设计师", body: "更快找到真正相关的参考，更准确地说明一个方案为什么成立。" },
+  { label: "对研究者", body: "把零散的项目网页、图像和文字整理成可引用、可比较的研究材料。" },
+  { label: "对 Agent 开发者", body: "提供干净、开放、可组合的建筑知识上下文，而不是一个封闭的聊天产品。" },
+];
+
+export const milestones = [
+  { phase: "M0", status: "已完成", title: "可演示的内容入口", summary: "验证 ArchLens 的核心阅读体验和产品边界。", deliverables: ["桌面端中文界面", "Mobbin 式案例库", "8 个精选案例", "本地收藏、评分与 Wish List"] },
+  { phase: "M1", status: "当前", title: "内容生产与资料包", summary: "让每个案例从展示内容升级为可下载、可复用的研究资产。", deliverables: ["补齐案例背景与研究问题", "统一 case.json / Markdown / README", "完善来源、署名与许可字段", "案例生产 Skill 与校验清单"] },
+  { phase: "M2", status: "下一步", title: "MCP 稳定化", summary: "把案例资料变成可被外部 Agent 稳定调用的公共知识入口。", deliverables: ["稳定的工具 schema 与版本策略", "Streamable HTTP 兼容性验证", "错误码、限流和可观测性", "文档化的客户端接入示例"] },
+  { phase: "M3", status: "随后", title: "开放协作与内容增长", summary: "让更多建筑师、研究者和学生参与案例建设。", deliverables: ["GitHub 案例提交与 Wish List", "CI 自动检查来源和 schema", "贡献者指南与编辑规范", "建筑 / 规划 / 景观的扩展分类"] },
+  { phase: "M4", status: "远期", title: "生产级知识基础设施", summary: "在保持开放和可追溯的前提下，接入更多资料来源。", deliverables: ["可配置的检索与爬取 pipeline", "版本化数据集与变更记录", "鉴权、配额与团队空间", "可选的用户自有模型工作流"] },
+];
+
+export const codeMap = [
+  { path: "app/ArchLensApp.tsx", label: "产品界面", body: "研究入口、案例库、工作区、项目说明和 MCP Playground。" },
+  { path: "lib/data.ts", label: "案例知识", body: "案例资料卡、任务模板和 MCP 工具展示元数据。" },
+  { path: "lib/mcp.ts", label: "MCP 领域层", body: "工具定义、案例检索、结构化提取、比较和资料包生成。" },
+  { path: "app/api/mcp/route.ts", label: "MCP HTTP 接口", body: "无鉴权 Demo Endpoint，承接 initialize、tools/list 和 tools/call。" },
+  { path: "skills/case-production/SKILL.md", label: "案例生产 Skill", body: "规定采集、结构化、引用核验和发布的复用流程。" },
+  { path: "docs/", label: "项目文档", body: "理念、架构、Milestones 和开源协作约定。" },
+];
+
