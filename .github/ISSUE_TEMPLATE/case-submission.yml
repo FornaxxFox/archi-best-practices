@@ -1,0 +1,26 @@
+name: 提交案例
+description: 提交一个可公开核验的建筑或规划案例
+title: "[Case] "
+labels: [case-submission]
+body:
+  - type: input
+    id: project
+    attributes:
+      label: 项目名称
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: 官方或公开来源
+      placeholder: https://...
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: 资料和许可说明
+      description: 请说明哪些内容可以再分发，哪些内容只能保留链接和署名。
+    validations:
+      required: true
+
