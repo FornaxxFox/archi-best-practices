@@ -37,6 +37,7 @@ npm run dev
 - 代码、MCP、schema 和 Skill 使用 Apache-2.0。
 - 案例图片和原始资料按各自来源许可处理，默认保留来源链接与署名，不重新分发未授权素材。
 - 新案例和 Wish List 使用 `.github/ISSUE_TEMPLATE/` 中的模板提交。
+- 贡献流程与内容边界见 [`CONTRIBUTING.md`](CONTRIBUTING.md)，每次 PR 会自动运行案例/MCP 校验、构建测试和 lint。
 
 ## 验证
 

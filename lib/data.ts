@@ -227,6 +227,26 @@ export const cases: CaseStudy[] = [
   },
 ];
 
+const requiredCaseFields: (keyof CaseStudy)[] = ["id", "title", "architect", "location", "year", "typology", "region", "scale", "projectType", "image", "short", "principle", "strategy"];
+
+export function validateCaseLibrary(items: readonly CaseStudy[] = cases) {
+  const errors: string[] = [];
+  const ids = new Set<string>();
+  for (const item of items) {
+    for (const field of requiredCaseFields) if (typeof item[field] !== "string" || !item[field].trim()) errors.push(`${item.id || "<unknown>"}.${field} 必须是非空字符串`);
+    if (ids.has(item.id)) errors.push(`${item.id}.id 不能重复`);
+    ids.add(item.id);
+    if (!item.imageCredit?.url.startsWith("https://") || !item.imageCredit.license.trim()) errors.push(`${item.id}.imageCredit 必须包含 HTTPS 来源和许可`);
+    if (!item.sources.length || item.sources.some((source) => !source.url.startsWith("https://") || !source.label.trim())) errors.push(`${item.id}.sources 必须包含带标签的 HTTPS 来源`);
+    if (!item.elements.length || !item.palette.length || !item.risks.length || !item.tags.length) errors.push(`${item.id} 的 elements、palette、risks、tags 不能为空`);
+    if (item.palette.some((color) => !/^#[0-9a-f]{6}$/i.test(color.hex))) errors.push(`${item.id}.palette 包含无效 HEX 颜色`);
+  }
+  if (errors.length) throw new Error(`案例数据校验失败：\n${errors.join("\n")}`);
+  return { caseCount: items.length };
+}
+
+validateCaseLibrary();
+
 export const taskTemplates = [
   { id: "principles", label: "提取设计思路", hint: "从一个案例里读懂它如何工作", prompt: "提取这个项目的核心理念、问题意识和空间策略，并标注每条判断的原始依据。" },
   { id: "elements", label: "识别设计元素", hint: "整理形态、动线、材料和界面", prompt: "拆解这个项目的体量、动线、材料、色彩和公共空间元素，输出可比较的结构化清单。" },

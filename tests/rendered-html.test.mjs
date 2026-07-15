@@ -76,6 +76,9 @@ test("MCP case tools expose the same research-pack fields", async () => {
     assert.ok(item.imageCredit.license);
     assert.ok(item.sources.length > 0);
     assert.ok(item.researchQuestions.length > 0);
+    assert.ok(item.elements.length > 0);
+    assert.ok(item.palette.every((color) => /^#[0-9a-f]{6}$/i.test(color.hex)));
+    assert.ok(item.risks.length > 0);
 
     const packResponse = await call("build_research_pack", { case_id: result.id });
     const packBody = await packResponse.json();
