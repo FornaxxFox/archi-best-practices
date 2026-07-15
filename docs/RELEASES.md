@@ -23,6 +23,13 @@
 - Dataset 仍是仓库内的精选种子数据，版本号需要随内容提交显式更新。
 - MCP 仍是无鉴权 Demo；持久化限流、审计存储和团队权限属于生产化阶段。
 
+## 2026-07-15 · Optional runtime security capability
+
+- Source capability commit：`1ac512339c7a4b2c13c62fea53c731f27f3b9aef`
+- Planned Sites release：版本 15（公开 Demo 默认仍为 `auth: "none"`）
+- 配置：设置 `ARCHLENS_MCP_TOKEN` 后启用 Bearer 鉴权；设置 `ARCHLENS_MCP_RATE_LIMIT_PER_MINUTE` 可调整单实例限流。
+- 验证：本地 11/11 测试通过，包含错误鉴权和可配置限流路径；未向 Sites 写入 token。
+
 ## 2026-07-15 · Demo release 13
 
 - Git commit：`cef72cbc33d9dd58fed50907c33f5fd70b0a863a`
