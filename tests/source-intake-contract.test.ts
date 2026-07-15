@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { reportByteLength, validateSourceIntakeReport } from "../lib/source-intake-contract.ts";
+import { canTransitionSourceIntake } from "../lib/source-intake-review.ts";
 
 function report(overrides: Record<string, unknown> = {}) {
   return {
@@ -29,4 +30,13 @@ test("source intake contract preserves failed evidence as a reviewable report", 
   const value = validateSourceIntakeReport(report({ summary: { sourceCount: 1, reachableCount: 0, failedCount: 1 }, sources: [{ ...report().sources[0], ok: false, status: null, finalUrl: null, error: "network unavailable" }] }));
   assert.equal(value.summary.failedCount, 1);
   assert.equal(value.sources[0].error, "network unavailable");
+});
+
+test("source intake review state transitions are explicit and reversible only to review", () => {
+  assert.equal(canTransitionSourceIntake("recorded", "needs_review"), true);
+  assert.equal(canTransitionSourceIntake("needs_review", "approved"), true);
+  assert.equal(canTransitionSourceIntake("needs_review", "rejected"), true);
+  assert.equal(canTransitionSourceIntake("approved", "needs_review"), true);
+  assert.equal(canTransitionSourceIntake("recorded", "approved"), false);
+  assert.equal(canTransitionSourceIntake("approved", "rejected"), false);
 });

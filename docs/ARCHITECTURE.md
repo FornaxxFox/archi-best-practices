@@ -36,7 +36,7 @@ docs/                    项目理念、架构、路线图和协作说明
   → source:pipeline（批量来源报告与失败门禁）
   → case.json / Markdown / README
   → 可选 POST /api/source-intake
-  → D1 source_intake_records（状态、摘要、完整报告与时间线）
+  → D1 source_intake_records + source_intake_review_events（状态、摘要、完整报告与审核时间线）
   → lib/data.ts
   → dataset:audit + dataset manifest
   → 网站案例库 + 资料包下载
@@ -59,6 +59,7 @@ docs/                    项目理念、架构、路线图和协作说明
 - 发布记录必须保留 Git commit、Sites 版本和可执行回滚目标。
 - MCP 鉴权通过运行时变量 opt-in，默认 Demo 不设置 token；密钥不能进入仓库或请求日志。
 - 来源 intake 写入通过独立运行时开关 opt-in；未配置 D1 或未开启写入时，接口 fail closed，不把浏览器本地存储冒充服务端持久化。
+- `approved` 只代表来源证据完成审核，不自动改变 `lib/data.ts`；案例发布仍需显式 PR 和 dataset audit。
 
 ## 当前 Demo 的边界
 

@@ -7,7 +7,7 @@ export const sourceIntakeRecords = sqliteTable(
     id: text("id").primaryKey(),
     caseId: text("case_id").notNull(),
     caseTitle: text("case_title").notNull(),
-    status: text("status", { enum: ["recorded", "needs_review"] }).notNull(),
+    status: text("status", { enum: ["recorded", "needs_review", "approved", "rejected"] }).notNull(),
     sourceCount: integer("source_count").notNull(),
     reachableCount: integer("reachable_count").notNull(),
     failedCount: integer("failed_count").notNull(),
@@ -32,4 +32,21 @@ export const mcpRateLimitBuckets = sqliteTable(
     updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   },
   (table) => [index("mcp_rate_limit_buckets_window_idx").on(table.windowStartedAt)],
+);
+
+export const sourceIntakeReviewEvents = sqliteTable(
+  "source_intake_review_events",
+  {
+    id: text("id").primaryKey(),
+    recordId: text("record_id").notNull(),
+    fromStatus: text("from_status"),
+    toStatus: text("to_status", { enum: ["recorded", "needs_review", "approved", "rejected"] }).notNull(),
+    note: text("note").notNull().default(""),
+    actor: text("actor").notNull().default("api"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("source_intake_review_events_record_idx").on(table.recordId),
+    index("source_intake_review_events_created_idx").on(table.createdAt),
+  ],
 );

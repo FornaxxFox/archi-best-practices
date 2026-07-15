@@ -72,16 +72,29 @@ curl -s "https://<your-domain>/api/source-intake?status=needs_review"
 curl -s "https://<your-domain>/api/source-intake?id=<record-id>"
 ```
 
-列表只返回摘要；传 `id` 时返回完整的 `source-report`，便于回到原始页面复核。
+列表只返回摘要；传 `id` 时返回完整的 `source-report` 和审核事件，便于回到原始页面复核。
+
+## 审核队列与状态迁移
+
+来源失败的报告会进入 `needs_review`，不会被当成已核验内容。启用写入后，审核者可以显式迁移状态：
+
+```bash
+curl -X PATCH "https://<your-domain>/api/source-intake?id=<record-id>" \
+  -H 'content-type: application/json' \
+  -H 'authorization: Bearer <token>' \
+  --data '{"status":"approved","note":"已回到事务所项目页复核来源上下文"}'
+```
+
+允许的迁移是：`recorded → needs_review`、`needs_review → approved/rejected`、`approved/rejected → needs_review`。每次登记和迁移都会写入 `source_intake_review_events`，记录前后状态、备注、actor 和时间。
 
 ## 数据表与回滚
 
 `source_intake_records` 保存：
 
 - 记录 ID、案例 ID 和案例标题；
-- `recorded` / `needs_review` 状态；
+- `recorded` / `needs_review` / `approved` / `rejected` 状态；
 - 来源总数、可访问数、失败数；
 - 生成时间、登记时间和更新时间；
 - 完整但有大小上限的 `report_json`。
 
-这个切片不执行自动入库，因此不会直接改变案例数据集。后续若增加队列或审核动作，应在这张证据记录之上新增状态迁移和审计事件，并保持可回滚。
+这个切片不执行自动入库，因此不会直接改变案例数据集；“approved”只表示来源证据完成审核，不等于自动合并到 `lib/data.ts`。后续若增加自动入库，应在审核事件之后另设显式发布动作，并保持可回滚。
