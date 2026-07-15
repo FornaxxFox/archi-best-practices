@@ -1,5 +1,7 @@
 # ArchLens / 建筑透镜
 
+[![ArchLens CI](https://github.com/YiJing233/archlens/actions/workflows/ci.yml/badge.svg)](https://github.com/YiJing233/archlens/actions/workflows/ci.yml) · [公开源码](https://github.com/YiJing233/archlens) · [在线 Demo](https://archlens.yiking233.chatgpt.site)
+
 ArchLens 是一个面向建筑设计研究的开放案例资料库 Demo：参考 Mobbin 的检索与浏览效率，提供可追溯的案例结构化资料、研究资料包下载、轻量工作区和真实 MCP Endpoint。
 
 ## 本地运行
