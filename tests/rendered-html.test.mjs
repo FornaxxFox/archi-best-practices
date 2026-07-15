@@ -68,8 +68,8 @@ test("MCP endpoint returns tool definitions and case data", async () => {
   assert.equal(body.schemaVersion, "1.0.0");
   assert.equal(body.auth, "none");
   assert.equal(body.rateLimitPerMinute, 60);
-  assert.equal(body.dataset.caseCount, 12);
-  assert.equal(body.dataset.version, "2026-07-15.1");
+  assert.equal(body.dataset.caseCount, 18);
+  assert.equal(body.dataset.version, "2026-07-15.2");
   assert.match(body.endpoint, /\/api\/mcp/);
   assert.match(response.headers.get("x-request-id") ?? "", /.+/);
   assert.equal(response.headers.get("mcp-schema-version"), "1.0.0");
@@ -80,7 +80,7 @@ test("health endpoint exposes dataset and protocol readiness", async () => {
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.status, "ok");
-  assert.equal(body.dataset.caseCount, 12);
+  assert.equal(body.dataset.caseCount, 18);
   assert.equal(body.dataset.kind, "curated-seed");
   assert.equal(body.checks.caseLibrary, "ok");
   assert.equal(body.mcp.auth, "none");
@@ -176,7 +176,7 @@ test("MCP case tools expose the same research-pack fields", async () => {
   const searchResponse = await call("search_cases", {});
   const searchBody = await searchResponse.json();
   const results = searchBody.result.structuredContent;
-  assert.equal(results.length, 12);
+  assert.equal(results.length, 18);
 
   const landscapeResponse = await call("search_cases", { projectType: "景观", region: "北美" });
   const landscapeBody = await landscapeResponse.json();
@@ -184,7 +184,7 @@ test("MCP case tools expose the same research-pack fields", async () => {
 
   const planningResponse = await call("search_cases", { projectType: "规划" });
   const planningBody = await planningResponse.json();
-  assert.deepEqual(planningBody.result.structuredContent.map((item) => item.id), ["hammarby-sjostad"]);
+  assert.deepEqual(planningBody.result.structuredContent.map((item) => item.id), ["hammarby-sjostad", "vauban-freiburg"]);
 
   const semanticSearchResponse = await call("search_cases", { query: "公共性" });
   const semanticSearchBody = await semanticSearchResponse.json();

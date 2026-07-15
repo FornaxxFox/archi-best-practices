@@ -18,7 +18,7 @@
     "source:ingest": "node scripts/source-ingest.mjs",
     "source:proposal": "node --experimental-strip-types scripts/source-proposal.mjs",
     "workflow:check": "node scripts/workflow-check.mjs",
-    "dataset:audit": "node --experimental-strip-types scripts/dataset-audit.mjs --baseline docs/datasets/2026-07-15.1.json",
+    "dataset:audit": "node --experimental-strip-types scripts/dataset-audit.mjs --baseline docs/datasets/2026-07-15.2.json",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

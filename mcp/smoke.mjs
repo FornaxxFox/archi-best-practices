@@ -8,7 +8,7 @@ if (authorization) headers["OAI-Sites-Authorization"] = authorization;
 
 const healthResponse = await fetch(new URL("/api/health", endpoint), { headers });
 const health = await healthResponse.json();
-if (!healthResponse.ok || health.status !== "ok" || health.dataset?.caseCount !== 12) throw new Error(`health 检查失败：${JSON.stringify(health)}`);
+if (!healthResponse.ok || health.status !== "ok" || health.dataset?.caseCount !== 18) throw new Error(`health 检查失败：${JSON.stringify(health)}`);
 
 let requestId = 0;
 async function rpc(method, params) {

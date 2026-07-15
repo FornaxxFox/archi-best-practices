@@ -39,7 +39,7 @@ export const projectExpectations = [
 ];
 
 export const milestones = [
-  { phase: "M0", status: "已完成", title: "可演示的内容入口", summary: "验证 ArchLens 的核心阅读体验和产品边界。", deliverables: ["桌面端中文界面", "Mobbin 式案例库", "首批 12 个精选案例", "本地收藏、评分与 Wish List"] },
+  { phase: "M0", status: "已完成", title: "可演示的内容入口", summary: "验证 ArchLens 的核心阅读体验和产品边界。", deliverables: ["桌面端中文界面", "Mobbin 式案例库", "首批 18 个精选案例", "本地收藏、评分与 Wish List"] },
   { phase: "M1", status: "已完成首个闭环", title: "内容生产与资料包", summary: "让每个案例从展示内容升级为可下载、可复用的研究资产。", deliverables: ["补齐案例背景与研究问题", "统一 case.json / Markdown / README", "完善来源、署名与许可字段", "网站与 MCP 共用资料包生成器", "零依赖 case:pack CLI 与模板"] },
   { phase: "M2", status: "已完成 Demo 闭环", title: "MCP 稳定化", summary: "把案例资料变成可被外部 Agent 稳定调用的公共知识入口。", deliverables: ["服务 0.2.0 / schema 1.0.0", "JSON-RPC 错误、限流与请求观测", "公开 Demo Endpoint 与远程 smoke 验证", "Claude / Cursor 远程 HTTP 配置示例", "可选 Bearer 鉴权与运行时限流配置"] },
   { phase: "M3", status: "当前", title: "开放协作与内容增长", summary: "让更多建筑师、研究者和学生参与案例建设，并让来源处理可以复用。", deliverables: ["GitHub 案例提交与 Wish List", "CI 自动检查来源和 schema", "贡献者指南与编辑规范", "零依赖来源 intake 与目录级 pipeline", "持续扩展建筑 / 规划 / 景观案例"] },
