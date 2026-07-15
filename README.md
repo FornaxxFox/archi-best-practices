@@ -52,5 +52,6 @@ npm run dev
 npm run build
 npm test
 npm run lint
+npm run dataset:audit
 ARCHLENS_MCP_ENDPOINT="https://<your-domain>/api/mcp" npm run mcp:smoke
 ```

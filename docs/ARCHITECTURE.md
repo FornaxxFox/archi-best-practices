@@ -10,9 +10,12 @@ app/
 lib/
   data.ts                案例资料、任务模板和展示元数据
   dataset.ts             数据集版本与数量清单
+  dataset-meta.ts        数据集版本常量（供运行时和 CLI 共用）
   mcp.ts                 MCP 工具定义与领域逻辑
 scripts/
   source-intake.mjs      原始来源状态、元数据和有界摘录
+  dataset-audit.mjs      逐案例稳定哈希、变更审核和基线检查
+docs/datasets/            可审阅的数据集基线快照
 skills/
   case-production/       案例生产 Skill
 docs/                    项目理念、架构、路线图和协作说明
@@ -27,6 +30,7 @@ docs/                    项目理念、架构、路线图和协作说明
   → source:audit（只记录来源证据，不解释、不下载图片）
   → case.json / Markdown / README
   → lib/data.ts
+  → dataset:audit + dataset manifest
   → 网站案例库 + 资料包下载
   → lib/mcp.ts
   → MCP contract / validation / observability / dataset manifest

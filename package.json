@@ -9,11 +9,12 @@
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
     "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
-    "test": "npm run build && node --test tests/*.test.mjs",
+    "test": "npm run build && npm run dataset:audit && node --test tests/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "mcp:smoke": "node mcp/smoke.mjs",
     "case:pack": "node scripts/case-pack.mjs",
     "source:audit": "node scripts/source-intake.mjs",
+    "dataset:audit": "node --experimental-strip-types scripts/dataset-audit.mjs --baseline docs/datasets/2026-07-15.1.json",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

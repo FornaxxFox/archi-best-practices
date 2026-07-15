@@ -1,7 +1,7 @@
 import { cases } from "./data";
+import { DATASET_KIND, DATASET_VERSION } from "./dataset-meta";
 
-export const DATASET_VERSION = "2026-07-15.1";
-export const DATASET_KIND = "curated-seed";
+export { DATASET_KIND, DATASET_VERSION };
 
 export function getDatasetManifest() {
   return {
