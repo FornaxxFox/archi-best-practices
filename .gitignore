@@ -43,3 +43,6 @@ next-env.d.ts
 
 # local browser automation artifacts
 /midscene_run/
+
+# local Sites packaging artifacts
+/.sites-artifacts/
