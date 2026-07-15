@@ -26,6 +26,7 @@ async function rpc(method, params) {
 
 const initialize = await rpc("initialize", { protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "archlens-smoke", version: "1.0.0" } });
 if (initialize.protocolVersion !== "2025-03-26") throw new Error(`协议版本不匹配：${initialize.protocolVersion}`);
+if (!initialize.capabilities?.resources || !initialize.capabilities?.prompts || !initialize.capabilities?.tools) throw new Error("initialize 缺少 tools/resources/prompts capability");
 await rpc("notifications/initialized", {});
 
 const tools = await rpc("tools/list", {});
@@ -61,4 +62,15 @@ const workflows = await rpc("resources/read", { uri: "archlens://workflows" });
 const workflowPayload = JSON.parse(workflows.contents?.[0]?.text ?? "null");
 if (!workflowPayload?.workflows?.some((workflow) => workflow.id === "match-brief-to-cases")) throw new Error("工作流资源不可读取");
 
-console.log(JSON.stringify({ endpoint, datasetVersion: health.dataset.version, protocolVersion: initialize.protocolVersion, toolCount: actualTools.length, resourceCount: resources.resources.length, semanticSearchMatches: search.structuredContent.length, briefMatches: matches.structuredContent.results.length, landscapeMatches: landscape.structuredContent.length, checkedCase: item.structuredContent.id, researchPack: "ok", caseCollection: "ok" }, null, 2));
+const templates = await rpc("resources/templates/list", {});
+if (!templates.resourceTemplates?.some((template) => template.uriTemplate === "archlens://cases/{case_id}")) throw new Error("缺少单案例资源模板");
+const caseResource = await rpc("resources/read", { uri: "archlens://cases/heydar-aliyev-centre" });
+const caseResourcePayload = JSON.parse(caseResource.contents?.[0]?.text ?? "null");
+if (caseResourcePayload?.case?.id !== "heydar-aliyev-centre" || !caseResourcePayload.case.sources?.length) throw new Error("单案例资源不可读取");
+
+const prompts = await rpc("prompts/list", {});
+if (prompts.prompts?.length !== 4) throw new Error(`研究提示数量异常：${prompts.prompts?.length}`);
+const prompt = await rpc("prompts/get", { name: "extract-design-thinking", arguments: { case_id: "heydar-aliyev-centre" } });
+if (!prompt.messages?.[0]?.content?.text?.includes("build_research_pack") || !prompt.messages[0].content.text.includes("原始来源")) throw new Error("研究提示内容不完整");
+
+console.log(JSON.stringify({ endpoint, datasetVersion: health.dataset.version, protocolVersion: initialize.protocolVersion, toolCount: actualTools.length, resourceCount: resources.resources.length, resourceTemplateCount: templates.resourceTemplates.length, promptCount: prompts.prompts.length, semanticSearchMatches: search.structuredContent.length, briefMatches: matches.structuredContent.results.length, landscapeMatches: landscape.structuredContent.length, checkedCase: item.structuredContent.id, researchPack: "ok", caseCollection: "ok", caseResource: "ok", prompt: "ok" }, null, 2));

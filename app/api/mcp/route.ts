@@ -2,7 +2,7 @@ import { eq, lt, sql } from "drizzle-orm";
 import { getDb, hasDbBinding } from "@/db";
 import { mcpRateLimitBuckets } from "@/db/schema";
 import { getDatasetManifest } from "@/lib/dataset";
-import { callMcpTool, MCP_PROTOCOL_VERSION, MCP_SCHEMA_VERSION, MCP_SERVER_VERSION, McpToolError, mcpResourceDefinitions, mcpToolDefinitions, readMcpResource } from "@/lib/mcp";
+import { callMcpTool, getMcpPrompt, MCP_PROTOCOL_VERSION, MCP_SCHEMA_VERSION, MCP_SERVER_VERSION, McpToolError, mcpPromptDefinitions, mcpResourceDefinitions, mcpResourceTemplateDefinitions, mcpToolDefinitions, readMcpResource } from "@/lib/mcp";
 import { getMcpRuntimeConfig, hasValidMcpAuthorization } from "@/lib/runtime-config";
 
 const baseHeaders = {
@@ -125,7 +125,7 @@ export async function GET(request: Request) {
     return unauthorized(id, rate, startedAt);
   }
   logRequest(id, "GET", startedAt, "ok");
-  return response({ name: "archlens", version: MCP_SERVER_VERSION, schemaVersion: MCP_SCHEMA_VERSION, protocol: MCP_PROTOCOL_VERSION, transport: "streamable-http", auth: config.authEnabled ? "bearer" : "none", rateLimitPerMinute: config.rateLimitPerMinute, dataset: getDatasetManifest(), tools: mcpToolDefinitions.map((tool) => tool.name), resources: mcpResourceDefinitions.map((resource) => resource.uri), endpoint: "/api/mcp" }, id, 200, rate, startedAt);
+  return response({ name: "archlens", version: MCP_SERVER_VERSION, schemaVersion: MCP_SCHEMA_VERSION, protocol: MCP_PROTOCOL_VERSION, transport: "streamable-http", auth: config.authEnabled ? "bearer" : "none", rateLimitPerMinute: config.rateLimitPerMinute, dataset: getDatasetManifest(), tools: mcpToolDefinitions.map((tool) => tool.name), resources: mcpResourceDefinitions.map((resource) => resource.uri), resourceTemplates: mcpResourceTemplateDefinitions.map((resource) => resource.uriTemplate), prompts: mcpPromptDefinitions.map((prompt) => prompt.name), endpoint: "/api/mcp" }, id, 200, rate, startedAt);
 }
 
 export async function POST(request: Request) {
@@ -158,7 +158,7 @@ export async function POST(request: Request) {
     const messageId = message.id ?? null;
     if (method === "initialize") {
       logRequest(id, method, startedAt, "ok");
-      return response({ jsonrpc: "2.0", id: messageId, result: { protocolVersion: MCP_PROTOCOL_VERSION, capabilities: { tools: {}, resources: {} }, serverInfo: { name: "archlens", version: MCP_SERVER_VERSION, schemaVersion: MCP_SCHEMA_VERSION, dataset: getDatasetManifest() } } }, id, 200, rate, startedAt);
+      return response({ jsonrpc: "2.0", id: messageId, result: { protocolVersion: MCP_PROTOCOL_VERSION, capabilities: { tools: {}, resources: {}, prompts: {} }, serverInfo: { name: "archlens", version: MCP_SERVER_VERSION, schemaVersion: MCP_SCHEMA_VERSION, dataset: getDatasetManifest() } } }, id, 200, rate, startedAt);
     }
     if (method === "notifications/initialized") {
       logRequest(id, method, startedAt, "ok");
@@ -171,6 +171,10 @@ export async function POST(request: Request) {
     if (method === "resources/list") {
       logRequest(id, method, startedAt, "ok");
       return response({ jsonrpc: "2.0", id: messageId, result: { resources: mcpResourceDefinitions } }, id, 200, rate, startedAt);
+    }
+    if (method === "resources/templates/list") {
+      logRequest(id, method, startedAt, "ok");
+      return response({ jsonrpc: "2.0", id: messageId, result: { resourceTemplates: mcpResourceTemplateDefinitions } }, id, 200, rate, startedAt);
     }
     if (method === "resources/read") {
       const uri = typeof message.params?.uri === "string" ? message.params.uri : "";
@@ -185,6 +189,30 @@ export async function POST(request: Request) {
       }
       logRequest(id, method, startedAt, "ok");
       return response({ jsonrpc: "2.0", id: messageId, result: { contents: [resource] } }, id, 200, rate, startedAt);
+    }
+    if (method === "prompts/list") {
+      logRequest(id, method, startedAt, "ok");
+      return response({ jsonrpc: "2.0", id: messageId, result: { prompts: mcpPromptDefinitions } }, id, 200, rate, startedAt);
+    }
+    if (method === "prompts/get") {
+      const name = typeof message.params?.name === "string" ? message.params.name : "";
+      if (!name) {
+        logRequest(id, method, startedAt, "invalid_params");
+        return rpcError(messageId, -32602, "prompts/get 需要非空 name", id, rate, startedAt, { field: "name" });
+      }
+      try {
+        const prompt = getMcpPrompt(name, message.params?.arguments ?? {});
+        if (!prompt) {
+          logRequest(id, method, startedAt, "invalid_params");
+          return rpcError(messageId, -32602, "Unknown prompt", id, rate, startedAt, { name });
+        }
+        logRequest(id, method, startedAt, "ok");
+        return response({ jsonrpc: "2.0", id: messageId, result: prompt }, id, 200, rate, startedAt);
+      } catch (error) {
+        const promptError = error instanceof McpToolError ? error : new McpToolError("INVALID_PARAMS", error instanceof Error ? error.message : "prompt 参数无效");
+        logRequest(id, method, startedAt, promptError.code);
+        return rpcError(messageId, -32602, promptError.message, id, rate, startedAt, promptError.details);
+      }
     }
     if (method !== "tools/call") {
       logRequest(id, method, startedAt, "method_not_found");

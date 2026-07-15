@@ -29,7 +29,7 @@ npm run dev
 
 ## MCP
 
-把 `https://archlens.yiking233.chatgpt.site/api/mcp` 配置到支持 Streamable HTTP MCP 的 Agent 中即可。当前服务版本为 `0.3.0`、契约版本为 `1.1.0`，提供 8 个只读工具和 3 个可读取资源；工具 schema、curl 和客户端连接说明见 [`mcp/README.md`](mcp/README.md)。Demo 不绑定任何模型供应商，返回的结构化案例上下文交给用户自己的 AI 工具继续处理。
+把 `https://archlens.yiking233.chatgpt.site/api/mcp` 配置到支持 Streamable HTTP MCP 的 Agent 中即可。当前服务版本为 `0.4.0`、契约版本为 `1.2.0`，提供 8 个只读工具、3 个固定资源、单案例资源模板和 4 个研究提示；工具 schema、curl 和客户端连接说明见 [`mcp/README.md`](mcp/README.md)。Demo 不绑定任何模型供应商，返回的结构化案例上下文交给用户自己的 AI 工具继续处理。
 
 ## 案例生产
 

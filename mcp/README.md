@@ -1,7 +1,7 @@
 # ArchLens MCP
 
 ArchLens exposes a real no-auth Streamable HTTP MCP-compatible endpoint at `/api/mcp`.
-当前契约版本为 `1.1.0`，服务版本为 `0.3.0`。
+当前契约版本为 `1.2.0`，服务版本为 `0.4.0`。
 
 ## Connection
 
@@ -17,7 +17,7 @@ https://<your-domain>/api/mcp
 https://archlens.yiking233.chatgpt.site/api/mcp
 ```
 
-Endpoint 支持 `initialize`、`tools/list`、`tools/call`、`resources/list` 和 `resources/read`，与网站使用同一份精选案例数据。不绑定模型供应商，客户端可以把返回的结构化上下文交给自己的 Agent 或模型。
+Endpoint 支持工具、固定资源、资源模板和 MCP 原生研究提示，包括 `tools/*`、`resources/*` 和 `prompts/*`。它与网站使用同一份精选案例数据，不绑定模型供应商。
 
 发布后可用健康检查确认数据集版本和案例数量：
 
@@ -64,6 +64,14 @@ curl -s "$ARCHLENS_ENDPOINT" \
 curl -s "$ARCHLENS_ENDPOINT" \
   -H 'content-type: application/json' \
   --data '{"jsonrpc":"2.0","id":4,"method":"resources/read","params":{"uri":"archlens://workflows"}}'
+```
+
+获取一个参数化研究提示：
+
+```bash
+curl -s "$ARCHLENS_ENDPOINT" \
+  -H 'content-type: application/json' \
+  --data '{"jsonrpc":"2.0","id":5,"method":"prompts/get","params":{"name":"extract-design-thinking","arguments":{"case_id":"heydar-aliyev-centre"}}}'
 ```
 
 仓库还提供一个零依赖的协议级 smoke client，可在部署后验证远程 MCP：
@@ -119,14 +127,24 @@ npm run case:pack -- --input ./case.json --out ./research-packs/my-case --source
 - `archlens://dataset`：数据集版本、案例数量和来源边界。
 - `archlens://cases`：可直接读取的案例索引与来源。
 - `archlens://workflows`：内置只读研究工作流模板。
+- `archlens://cases/{case_id}`：单案例资源模板，返回完整案例、来源和使用边界。
 
-服务会在 `initialize` 中声明 `resources` capability。未知 URI 使用标准 JSON-RPC `-32002` 错误，不会回退到外部 URL 抓取。
+服务会在 `initialize` 中声明 `resources` capability，并通过 `resources/templates/list` 暴露单案例 URI 模板。未知或非法 URI 使用标准 JSON-RPC `-32002` 错误，不会回退到外部 URL 抓取。
+
+## Prompts
+
+- `extract-design-thinking`：输入 `case_id`，生成来源优先的设计思路提取步骤。
+- `extract-elements-and-palette`：输入 `case_id`，生成元素、颜色和材料研究步骤。
+- `compare-case-strategies`：输入两个案例 ID，生成结构化比较步骤。
+- `match-brief-to-cases`：输入 `brief`，先做可解释匹配，再生成多案例研究集合。
+
+Prompts 是用户主动选择的研究模板，不会在服务端调用模型。`case_id` 必须来自当前数据集，`brief` 限制为 2–500 个字符，未知参数、缺失参数和未知 prompt 都返回 JSON-RPC `-32602`。
 
 来源证据登记不作为 MCP 工具自动写入；贡献者先用 CLI 生成并复核报告，再按 [`docs/SOURCE_INTAKE.md`](../docs/SOURCE_INTAKE.md) 选择性登记到 D1。这样 MCP 仍然只读取稳定的案例资料，避免把外部网页抓取或写入副作用隐藏在 Agent 调用里。
 
 ## 契约与错误
 
-- `GET /api/mcp` 返回 `version`、`schemaVersion`、`protocol` 和工具索引。
+- `GET /api/mcp` 返回 `version`、`schemaVersion`、`protocol` 以及工具、资源模板和提示索引。
 - 每个响应带有 `X-Request-ID`、`X-Response-Time-Ms`、`MCP-Server-Version` 和 `MCP-Schema-Version`，便于客户端和部署日志定位请求。
 - 工具业务错误保持 HTTP 200，并在 `result.isError=true`、`result.structuredContent.error` 中返回 `code`、`message` 和 `details`，方便 MCP 客户端继续处理。
 - JSON-RPC 解析错误使用 `-32700`，无效请求使用 `-32600`，未知方法使用 `-32601`，服务异常使用 `-32603`。
