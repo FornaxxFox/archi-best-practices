@@ -2,6 +2,15 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Workspace quota policy release 56
+
+- Git commit：`2d791a5a4889b90a61d1480c152f7b42db037b59`
+- Sites：版本 56，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：workspace quota 按读取、写入、成员管理区分预算；owner/operator 使用 2 倍预算，editor/viewer 使用基础预算；429 响应增加 action、role 和 `X-RateLimit-Scope`。
+- 默认配置：120 / 60 / 30 次每分钟，可分别通过 `ARCHLENS_WORKSPACE_RATE_LIMIT_PER_MINUTE`、`ARCHLENS_WORKSPACE_WRITE_RATE_LIMIT_PER_MINUTE` 和 `ARCHLENS_WORKSPACE_MEMBER_RATE_LIMIT_PER_MINUTE` 调整。
+- 边界：公开 Demo 仍关闭 workspace；自动来源入库仍需人工审核、PR 和 dataset audit。
+- 验证：构建、dataset audit、35 个 JavaScript 测试和 12 个 TypeScript 测试、lint、GitHub CI 和生产 health 通过。
+
 ## 2026-07-15 · Workspace invite handoff release 54
 
 - Git commit：`05319f94ca785128f85455db9c29af96eb50cfbc`
