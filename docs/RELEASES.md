@@ -2,6 +2,14 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Batch source pipeline release 21
+
+- Git commit：`cb82d5166ce74700ad3d69190f4e8b565a04180a`
+- Sites：版本 21，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：`source:pipeline`，按顺序批量处理案例目录，写入逐案例来源报告和 `pipeline-report.json` 总览。
+- 门禁：无效案例、重复 ID 或来源失败会保留证据并以非零状态结束，不会静默进入发布。
+- 验证：本地 20/20 测试、构建和 GitHub CI 通过；线上健康检查、MCP smoke 和项目页状态通过。
+
 ## 2026-07-15 · Dataset audit release 19
 
 - Git commit：`80e721c03621bb93e96eaed9b1ed4d037620a7f4`
