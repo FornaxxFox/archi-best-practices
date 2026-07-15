@@ -54,6 +54,6 @@
 - MCP 鉴权、配额和团队空间
 - 用户自有模型和工作流的可选接入
 
-当前进展：来源 intake、目录级 pipeline、`dataset:audit`、D1 证据登记、审核状态迁移、D1 限流 bucket、顺序 ingest、用户自有工作流 manifest 校验、可移交 workspace snapshot、operator-token 共享工作区和显式发布候选门禁已完成首个可执行闭环；成员级权限、自动入库和更复杂的配额治理仍未完成。
+当前进展：来源 intake、目录级 pipeline、`dataset:audit`、D1 证据登记、审核状态迁移、D1 限流 bucket、顺序 ingest、用户自有工作流 manifest 校验、可移交 workspace snapshot、operator-token 共享工作区、成员角色/撤销/审计和显式发布候选门禁已完成首个可执行闭环；token 过期、自动入库和更复杂的配额治理仍未完成。
 
 验收标准：系统具备可回滚、可审计、可扩展和可定位的线上运行能力。

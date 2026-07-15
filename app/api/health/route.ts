@@ -41,7 +41,7 @@ export async function GET() {
     versions: { server: MCP_SERVER_VERSION, schema: MCP_SCHEMA_VERSION, protocol: MCP_PROTOCOL_VERSION },
     mcp: { auth: config.authEnabled ? "bearer" : "none", rateLimitPerMinute: config.rateLimitPerMinute, rateLimitStorage: sourceIntakeStorage === "not_configured" ? "memory" : "d1" },
     sourceIntake: { storage: sourceIntakeStorage, auth: config.sourceIntakeAuthEnabled || config.authEnabled ? "bearer" : "none", writeEnabled: config.sourceIntakeWriteEnabled, maxReportBytes: config.sourceIntakeMaxReportBytes },
-    workspace: { storage: workspaceStorage, auth: config.workspaceAuthEnabled ? "bearer" : "disabled", writeEnabled: config.workspaceWriteEnabled, maxSnapshotBytes: config.workspaceMaxSnapshotBytes },
+    workspace: { storage: workspaceStorage, auth: config.workspaceAuthEnabled ? "bearer" : "disabled", memberPermissions: config.workspaceAuthEnabled ? "operator_and_member_tokens" : "disabled", writeEnabled: config.workspaceWriteEnabled, maxSnapshotBytes: config.workspaceMaxSnapshotBytes },
     dataset: getDatasetManifest(),
     checks: { caseLibrary: cases.length > 0 ? "ok" : "failed", sourceIntake: sourceIntakeStorage, workspace: workspaceStorage },
   }, { headers: { "Cache-Control": "no-store" } });

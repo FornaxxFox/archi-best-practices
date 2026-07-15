@@ -65,3 +65,38 @@ export const workspaceSpaces = sqliteTable(
   },
   (table) => [index("workspace_spaces_updated_idx").on(table.updatedAt)],
 );
+
+export const workspaceMembers = sqliteTable(
+  "workspace_members",
+  {
+    id: text("id").primaryKey(),
+    spaceId: text("space_id").notNull(),
+    memberId: text("member_id").notNull(),
+    label: text("label").notNull(),
+    role: text("role", { enum: ["owner", "editor", "viewer"] }).notNull(),
+    tokenHash: text("token_hash").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    revokedAt: text("revoked_at"),
+  },
+  (table) => [
+    index("workspace_members_space_idx").on(table.spaceId),
+    index("workspace_members_token_idx").on(table.tokenHash),
+  ],
+);
+
+export const workspaceAuditEvents = sqliteTable(
+  "workspace_audit_events",
+  {
+    id: text("id").primaryKey(),
+    spaceId: text("space_id").notNull(),
+    memberId: text("member_id"),
+    actor: text("actor").notNull(),
+    action: text("action").notNull(),
+    detailJson: text("detail_json").notNull().default("{}"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("workspace_audit_events_space_idx").on(table.spaceId),
+    index("workspace_audit_events_created_idx").on(table.createdAt),
+  ],
+);

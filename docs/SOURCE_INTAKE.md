@@ -133,4 +133,21 @@ curl -X POST "https://<your-domain>/api/workspaces" \
   --data '{"id":"studio-research","name":"Studio Research","ownerLabel":"Team","snapshot":{}}'
 ```
 
-示例中的空 `snapshot` 只用于说明接口形状；实际请求必须提供由页面导出的完整 workspace snapshot。公开 Demo 不配置 token，因此 `/api/workspaces` 返回 404；配置 token 但未应用 migration 时返回 503。当前版本使用一个 operator token 保护整个空间，成员级权限、邀请和审计属于后续阶段。
+示例中的空 `snapshot` 只用于说明接口形状；实际请求必须提供由页面导出的完整 workspace snapshot。公开 Demo 不配置 token，因此 `/api/workspaces` 返回 404；配置 token 但未应用 migration 时返回 503。operator token 负责空间和成员管理，成员通过独立 token 访问指定空间。
+
+成员级访问通过一次性 token 实现。operator 创建成员后，响应中的 token 只返回一次：
+
+```bash
+curl -X POST "https://<your-domain>/api/workspaces/members" \
+  -H "Authorization: Bearer $ARCHLENS_WORKSPACE_TOKEN" \
+  -H 'content-type: application/json' \
+  --data '{"spaceId":"studio-research","memberId":"designer-a","label":"Designer A","role":"editor"}'
+
+curl -H "Authorization: Bearer $ARCHLENS_WORKSPACE_TOKEN" \
+  "https://<your-domain>/api/workspaces/members?space_id=studio-research"
+
+curl -X DELETE "https://<your-domain>/api/workspaces/members?space_id=studio-research&member_id=designer-a" \
+  -H "Authorization: Bearer $ARCHLENS_WORKSPACE_TOKEN"
+```
+
+`viewer` 只能读取指定空间，`editor` 可以更新快照，operator/owner 才能创建空间、邀请和撤销成员。成员 token 只保存 SHA-256 hash；成员邀请和撤销会写入 `workspace_audit_events`。当前不支持 token 过期、邀请链接和多 operator。

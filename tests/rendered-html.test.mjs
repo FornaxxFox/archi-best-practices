@@ -88,11 +88,18 @@ test("health endpoint exposes dataset and protocol readiness", async () => {
   assert.equal(body.sourceIntake.auth, "none");
   assert.equal(body.sourceIntake.writeEnabled, false);
   assert.equal(body.workspace.storage, "disabled");
+  assert.equal(body.workspace.memberPermissions, "disabled");
   assert.equal(body.workspace.writeEnabled, false);
 });
 
 test("shared workspace route stays closed by default", async () => {
   const response = await render("/api/workspaces");
+  assert.equal(response.status, 404);
+  assert.match((await response.json()).error, /未启用/);
+});
+
+test("shared workspace member management stays closed by default", async () => {
+  const response = await render("/api/workspaces/members?space_id=studio-research");
   assert.equal(response.status, 404);
   assert.match((await response.json()).error, /未启用/);
 });
