@@ -2,6 +2,21 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Source report ingest release 31
+
+- Git commit：`fe2ec6999997002702b848b90777f15a409daeff`
+- Sites：版本 31，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：`source:ingest`，按稳定顺序把已复核的 `source-report.json` 批量提交到 D1 登记接口。
+- 边界：只持久化已有来源证据，不启动隐藏爬虫、不自动修改案例库；任一失败都会以非零状态结束。
+- 验证：本地 25 个 JavaScript 测试与 3 个 TypeScript contract 测试、构建、lint 和 GitHub CI 通过。
+
+## 2026-07-15 · Persistent MCP quota release 30
+
+- Git commit：`df74965bbfeb59a64fb45a1995a660efbba3eedb`
+- Sites：版本 30，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：D1 `mcp_rate_limit_buckets`，MCP 限流在有 D1 时跨实例持久化；未配置 D1 时保留内存 fallback。
+- 验证：线上 `/api/health` 报告 `rateLimitStorage: "d1"`，远程 MCP smoke 通过。
+
 ## 2026-07-15 · Source evidence handoff release 25
 
 - Git commit：`10e23382e3e00a3a865910260792187072c3605e`
