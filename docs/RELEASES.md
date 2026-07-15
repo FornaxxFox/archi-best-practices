@@ -2,6 +2,14 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Source intake automation release 50
+
+- Git commit：`1355352ae49261d58f1c65d8a0c6672f2eba574a`
+- Sites：版本 50，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：GitHub Actions `ArchLens Source Intake`，可手动触发顺序抓取、证据报告、阻断式人工发布候选和可选 D1 ingest；失败证据会作为 artifact 保留。
+- 边界：workflow 不修改 `lib/data.ts`、不自动创建 PR、不自动发布数据集；`ingest=true` 也只登记 source evidence。
+- 验证：工作流配置和 diff 检查、构建、dataset audit、35 个 JavaScript 测试和 10 个 TypeScript 测试通过；生产公开接口继续保持关闭写入。
+
 ## 2026-07-15 · Workspace quota release 49
 
 - Git commit：`27210f5c3ac874be36a7e4fcc9b80017b69d58d9`
