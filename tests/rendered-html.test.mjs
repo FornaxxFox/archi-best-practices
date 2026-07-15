@@ -47,7 +47,11 @@ test("MCP endpoint returns tool definitions and case data", async () => {
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.name, "archlens");
+  assert.equal(body.version, "0.2.0");
+  assert.equal(body.schemaVersion, "1.0.0");
   assert.match(body.endpoint, /\/api\/mcp/);
+  assert.match(response.headers.get("x-request-id") ?? "", /.+/);
+  assert.equal(response.headers.get("mcp-schema-version"), "1.0.0");
 });
 
 test("MCP case tools expose the same research-pack fields", async () => {
@@ -78,4 +82,31 @@ test("MCP case tools expose the same research-pack fields", async () => {
     assert.deepEqual(pack.json.imageCredit, item.imageCredit);
     assert.deepEqual(pack.json.sources, item.sources);
   }
+});
+
+test("MCP returns stable JSON-RPC errors and tool errors", async () => {
+  const post = (body) => render("/api/mcp", {
+    method: "POST",
+    headers: { accept: "application/json", "content-type": "application/json" },
+    body,
+  });
+
+  const invalidJson = await post("{");
+  assert.equal(invalidJson.status, 400);
+  assert.equal((await invalidJson.json()).error.code, -32700);
+
+  const invalidRequest = await post(JSON.stringify({ jsonrpc: "2.0", id: 3 }));
+  assert.equal(invalidRequest.status, 400);
+  assert.equal((await invalidRequest.json()).error.code, -32600);
+
+  const unknownMethod = await post(JSON.stringify({ jsonrpc: "2.0", id: 4, method: "unknown/method" }));
+  assert.equal(unknownMethod.status, 404);
+  assert.equal((await unknownMethod.json()).error.code, -32601);
+
+  const invalidToolArgs = await post(JSON.stringify({ jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "get_case", arguments: {} } }));
+  const invalidToolBody = await invalidToolArgs.json();
+  assert.equal(invalidToolArgs.status, 200);
+  assert.equal(invalidToolBody.result.isError, true);
+  assert.equal(invalidToolBody.result.structuredContent.error.code, "INVALID_PARAMS");
+  assert.match(invalidToolArgs.headers.get("x-response-time-ms") ?? "", /^\d+$/);
 });

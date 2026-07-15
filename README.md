@@ -20,7 +20,7 @@ npm run dev
 
 ## MCP
 
-把 `https://<your-domain>/api/mcp` 配置到支持 HTTP MCP 的 Agent 中即可。工具 schema 和连接说明见 [`mcp/README.md`](mcp/README.md)。Demo 不绑定任何模型供应商，返回的结构化案例上下文交给用户自己的 AI 工具继续处理。
+把 `https://<your-domain>/api/mcp` 配置到支持 Streamable HTTP MCP 的 Agent 中即可。当前服务版本为 `0.2.0`、契约版本为 `1.0.0`，工具 schema、curl 和客户端连接说明见 [`mcp/README.md`](mcp/README.md)。Demo 不绑定任何模型供应商，返回的结构化案例上下文交给用户自己的 AI 工具继续处理。
 
 ## 案例生产
 
