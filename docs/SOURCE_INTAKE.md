@@ -110,3 +110,27 @@ npm run source:proposal -- \
 ```
 
 脚本会输出 `dataset-change-proposal.json` 和 Markdown 审阅包。所有来源无失败时状态为 `ready_for_manual_review`；任一来源失败、报告非法或案例重复时状态为 `blocked` 并以非零退出。候选文件明确声明 `autoPublish: false`、`datasetMutation: false` 和 `requiresPullRequest: true`，不会修改 `lib/data.ts`。
+
+## 可选共享工作区
+
+浏览器工作区默认只存在本地，也可以通过 JSON 快照交接。如果需要一个 D1 中的共享空间，必须同时配置独立 token 和写入开关：
+
+```text
+ARCHLENS_WORKSPACE_TOKEN=<strong-random-token>
+ARCHLENS_WORKSPACE_WRITE_ENABLED=true
+ARCHLENS_WORKSPACE_MAX_SNAPSHOT_BYTES=500000
+```
+
+接口：
+
+```bash
+curl -H "Authorization: Bearer $ARCHLENS_WORKSPACE_TOKEN" \
+  "https://<your-domain>/api/workspaces"
+
+curl -X POST "https://<your-domain>/api/workspaces" \
+  -H "Authorization: Bearer $ARCHLENS_WORKSPACE_TOKEN" \
+  -H 'content-type: application/json' \
+  --data '{"id":"studio-research","name":"Studio Research","ownerLabel":"Team","snapshot":{}}'
+```
+
+示例中的空 `snapshot` 只用于说明接口形状；实际请求必须提供由页面导出的完整 workspace snapshot。公开 Demo 不配置 token，因此 `/api/workspaces` 返回 404；配置 token 但未应用 migration 时返回 503。当前版本使用一个 operator token 保护整个空间，成员级权限、邀请和审计属于后续阶段。

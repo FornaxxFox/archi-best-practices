@@ -87,6 +87,35 @@ test("health endpoint exposes dataset and protocol readiness", async () => {
   assert.equal(body.mcp.rateLimitStorage, "memory");
   assert.equal(body.sourceIntake.auth, "none");
   assert.equal(body.sourceIntake.writeEnabled, false);
+  assert.equal(body.workspace.storage, "disabled");
+  assert.equal(body.workspace.writeEnabled, false);
+});
+
+test("shared workspace route stays closed by default", async () => {
+  const response = await render("/api/workspaces");
+  assert.equal(response.status, 404);
+  assert.match((await response.json()).error, /未启用/);
+});
+
+test("shared workspace route requires its own token and never opens anonymous writes", async () => {
+  const previousToken = process.env.ARCHLENS_WORKSPACE_TOKEN;
+  const previousWrite = process.env.ARCHLENS_WORKSPACE_WRITE_ENABLED;
+  try {
+    process.env.ARCHLENS_WORKSPACE_TOKEN = "workspace-token";
+    delete process.env.ARCHLENS_WORKSPACE_WRITE_ENABLED;
+    assert.equal((await render("/api/workspaces")).status, 401);
+    assert.equal((await render("/api/workspaces", { headers: { authorization: "Bearer workspace-token" } })).status, 503);
+    delete process.env.ARCHLENS_WORKSPACE_TOKEN;
+    process.env.ARCHLENS_WORKSPACE_WRITE_ENABLED = "true";
+    const response = await render("/api/workspaces", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
+    assert.equal(response.status, 503);
+    assert.match((await response.json()).error, /需要配置/);
+  } finally {
+    if (previousToken === undefined) delete process.env.ARCHLENS_WORKSPACE_TOKEN;
+    else process.env.ARCHLENS_WORKSPACE_TOKEN = previousToken;
+    if (previousWrite === undefined) delete process.env.ARCHLENS_WORKSPACE_WRITE_ENABLED;
+    else process.env.ARCHLENS_WORKSPACE_WRITE_ENABLED = previousWrite;
+  }
 });
 
 test("source intake route fails closed when D1 is not bound", async () => {

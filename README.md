@@ -21,6 +21,7 @@ npm run dev
 - `/api/mcp`：无鉴权 MCP HTTP Endpoint
 - `/api/health`：协议、数据集版本和案例库就绪状态
 - `/api/source-intake`：可选的 D1 来源证据登记与复查接口（公开 Demo 默认关闭写入）
+- `/api/workspaces`：可选的 D1 共享工作区接口（公开 Demo 默认关闭）
 
 工作区支持从页面导出/导入 `workspace snapshot` JSON，便于通过文件或 GitHub 交接收藏、评分和最近研究任务；快照只在浏览器和用户自己的文件之间流转，不上传到 ArchLens。
 

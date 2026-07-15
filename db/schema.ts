@@ -50,3 +50,18 @@ export const sourceIntakeReviewEvents = sqliteTable(
     index("source_intake_review_events_created_idx").on(table.createdAt),
   ],
 );
+
+export const workspaceSpaces = sqliteTable(
+  "workspace_spaces",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    ownerLabel: text("owner_label").notNull().default(""),
+    schemaVersion: text("schema_version").notNull(),
+    datasetVersion: text("dataset_version").notNull(),
+    snapshotJson: text("snapshot_json").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [index("workspace_spaces_updated_idx").on(table.updatedAt)],
+);
