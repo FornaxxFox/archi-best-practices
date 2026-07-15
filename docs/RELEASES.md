@@ -2,6 +2,14 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Source intake release 17
+
+- Git commit：`0c7df7446cc0de195e7df022601e0e500964f5e6`
+- Sites：版本 17，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：零依赖 `source:audit`，按 HTTPS、超时和字节上限检查公开来源，输出页面状态、标题、描述、canonical 和有界摘录。
+- 边界：不下载图片、不保存整页、不生成事实；来源失败会显式标记为需复核。
+- 验证：本地 15/15 测试、GitHub CI、线上 `/api/health` 和 MCP smoke 均通过；真实 ZHA 项目页只读验收成功。
+
 ## 2026-07-15 · Demo release 12
 
 - Git commit：`60810110b5c8bfded8cd507ecb3d8d1990983b61`
