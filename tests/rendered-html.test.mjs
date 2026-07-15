@@ -63,7 +63,15 @@ test("MCP case tools expose the same research-pack fields", async () => {
   const searchResponse = await call("search_cases", {});
   const searchBody = await searchResponse.json();
   const results = searchBody.result.structuredContent;
-  assert.equal(results.length, 8);
+  assert.equal(results.length, 12);
+
+  const landscapeResponse = await call("search_cases", { projectType: "景观", region: "北美" });
+  const landscapeBody = await landscapeResponse.json();
+  assert.deepEqual(landscapeBody.result.structuredContent.map((item) => item.id), ["high-line"]);
+
+  const planningResponse = await call("search_cases", { projectType: "规划" });
+  const planningBody = await planningResponse.json();
+  assert.deepEqual(planningBody.result.structuredContent.map((item) => item.id), ["hammarby-sjostad"]);
 
   const semanticSearchResponse = await call("search_cases", { query: "公共性" });
   const semanticSearchBody = await semanticSearchResponse.json();

@@ -14,8 +14,8 @@ export class McpToolError extends Error {
   }
 }
 
-const projectTypes = ["文化", "公共", "居住", "规划"] as const;
-const regions = ["亚洲", "欧洲", "中东"] as const;
+const projectTypes = ["文化", "公共", "居住", "规划", "景观"] as const;
+const regions = ["亚洲", "欧洲", "中东", "北美"] as const;
 
 export const mcpToolDefinitions = [
   {
