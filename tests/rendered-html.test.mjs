@@ -75,6 +75,7 @@ test("health endpoint exposes dataset and protocol readiness", async () => {
   assert.equal(body.dataset.kind, "curated-seed");
   assert.equal(body.checks.caseLibrary, "ok");
   assert.equal(body.mcp.auth, "none");
+  assert.equal(body.mcp.rateLimitStorage, "memory");
   assert.equal(body.sourceIntake.auth, "none");
   assert.equal(body.sourceIntake.writeEnabled, false);
 });

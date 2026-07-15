@@ -22,3 +22,14 @@ export const sourceIntakeRecords = sqliteTable(
     index("source_intake_records_created_idx").on(table.createdAt),
   ],
 );
+
+export const mcpRateLimitBuckets = sqliteTable(
+  "mcp_rate_limit_buckets",
+  {
+    clientKey: text("client_key").primaryKey(),
+    windowStartedAt: integer("window_started_at").notNull(),
+    count: integer("count").notNull(),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [index("mcp_rate_limit_buckets_window_idx").on(table.windowStartedAt)],
+);

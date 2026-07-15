@@ -101,7 +101,7 @@ npm run case:pack -- --input ./case.json --out ./research-packs/my-case --source
 - 每个响应带有 `X-Request-ID`、`X-Response-Time-Ms`、`MCP-Server-Version` 和 `MCP-Schema-Version`，便于客户端和部署日志定位请求。
 - 工具业务错误保持 HTTP 200，并在 `result.isError=true`、`result.structuredContent.error` 中返回 `code`、`message` 和 `details`，方便 MCP 客户端继续处理。
 - JSON-RPC 解析错误使用 `-32700`，无效请求使用 `-32600`，未知方法使用 `-32601`，服务异常使用 `-32603`。
-- Demo 对单个客户端标识做进程内 60 次/分钟的尽力限流，并通过 `X-RateLimit-*` 响应头暴露状态。无鉴权和无持久化限流不适合生产环境。
+- 每个客户端标识默认每分钟 60 次请求，并通过 `X-RateLimit-*` 响应头暴露状态；配置 D1 时 bucket 使用 `mcp_rate_limit_buckets` 持久化，没有 D1 时才退回进程内 fallback。公开无鉴权 Demo 仍不等同于完整生产配额系统。
 
 Authentication is intentionally omitted in the demo. Production use still requires API key validation, durable rate limiting, audit logs, and a deployment-level timeout around external data sources.
 
@@ -114,6 +114,6 @@ ARCHLENS_MCP_TOKEN=<strong-random-token>
 ARCHLENS_MCP_RATE_LIMIT_PER_MINUTE=120
 ```
 
-启用后，`/api/mcp` 要求 `Authorization: Bearer <token>`；`/api/health` 会只报告 `auth: "bearer"`，不会泄露 token。当前限流仍是单实例尽力实现，跨实例部署应替换为持久化配额服务。
+启用后，`/api/mcp` 要求 `Authorization: Bearer <token>`；`/api/health` 会只报告 `auth: "bearer"`，不会泄露 token。健康接口的 `mcp.rateLimitStorage` 会报告当前使用 `d1` 还是 `memory`，便于确认跨实例限流是否真的生效。
 
 来源 intake 的 D1 登记是另一个显式开关：设置 `ARCHLENS_SOURCE_INTAKE_WRITE_ENABLED=true` 后，`POST /api/source-intake` 才会写入；生产环境建议同时设置独立的 `ARCHLENS_SOURCE_INTAKE_TOKEN`，这样不会影响公开 MCP 的无鉴权配置。公开 Demo 默认关闭写入。

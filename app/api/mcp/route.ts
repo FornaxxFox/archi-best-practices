@@ -1,3 +1,6 @@
+import { eq, lt, sql } from "drizzle-orm";
+import { getDb, hasDbBinding } from "@/db";
+import { mcpRateLimitBuckets } from "@/db/schema";
 import { getDatasetManifest } from "@/lib/dataset";
 import { callMcpTool, MCP_PROTOCOL_VERSION, MCP_SCHEMA_VERSION, MCP_SERVER_VERSION, McpToolError, mcpToolDefinitions } from "@/lib/mcp";
 import { getMcpRuntimeConfig, hasValidMcpAuthorization } from "@/lib/runtime-config";
@@ -15,6 +18,9 @@ const baseHeaders = {
 
 const rateLimitWindowMs = 60_000;
 const buckets = new Map<string, { startedAt: number; count: number }>();
+let persistentRateLimitWarningLogged = false;
+
+type RateLimitResult = { allowed: boolean; limit: number; remaining: number; resetAt: number };
 
 function requestId(request: Request) {
   return request.headers.get("x-request-id") ?? crypto.randomUUID();
@@ -24,8 +30,7 @@ function clientKey(request: Request) {
   return request.headers.get("cf-connecting-ip") ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous";
 }
 
-function consumeRateLimit(request: Request, limit: number) {
-  const now = Date.now();
+function consumeMemoryRateLimit(request: Request, limit: number, now = Date.now()): RateLimitResult {
   const key = clientKey(request);
   const current = buckets.get(key);
   const bucket = !current || now - current.startedAt >= rateLimitWindowMs ? { startedAt: now, count: 0 } : current;
@@ -37,7 +42,36 @@ function consumeRateLimit(request: Request, limit: number) {
   return { allowed: bucket.count <= limit, limit, remaining: Math.max(0, limit - bucket.count), resetAt: bucket.startedAt + rateLimitWindowMs };
 }
 
-function response(body: unknown, requestIdValue: string, status = 200, rate?: ReturnType<typeof consumeRateLimit>, startedAt = Date.now()) {
+async function consumeRateLimit(request: Request, limit: number): Promise<RateLimitResult> {
+  const now = Date.now();
+  const key = clientKey(request);
+  const windowStartedAt = Math.floor(now / rateLimitWindowMs) * rateLimitWindowMs;
+  if (await hasDbBinding()) {
+    try {
+      const db = await getDb();
+      await db.insert(mcpRateLimitBuckets).values({ clientKey: key, windowStartedAt, count: 1, updatedAt: new Date(now).toISOString() }).onConflictDoUpdate({
+        target: mcpRateLimitBuckets.clientKey,
+        set: {
+          windowStartedAt: sql`CASE WHEN ${mcpRateLimitBuckets.windowStartedAt} = ${windowStartedAt} THEN ${mcpRateLimitBuckets.windowStartedAt} ELSE ${windowStartedAt} END`,
+          count: sql`CASE WHEN ${mcpRateLimitBuckets.windowStartedAt} = ${windowStartedAt} THEN ${mcpRateLimitBuckets.count} + 1 ELSE 1 END`,
+          updatedAt: new Date(now).toISOString(),
+        },
+      });
+      const [bucket] = await db.select({ windowStartedAt: mcpRateLimitBuckets.windowStartedAt, count: mcpRateLimitBuckets.count }).from(mcpRateLimitBuckets).where(eq(mcpRateLimitBuckets.clientKey, key)).limit(1);
+      if (!bucket) throw new Error("限流 bucket 写入后无法读取");
+      if (Math.random() < 0.01) await db.delete(mcpRateLimitBuckets).where(lt(mcpRateLimitBuckets.windowStartedAt, windowStartedAt - rateLimitWindowMs));
+      return { allowed: bucket.count <= limit, limit, remaining: Math.max(0, limit - bucket.count), resetAt: bucket.windowStartedAt + rateLimitWindowMs };
+    } catch (error) {
+      if (!persistentRateLimitWarningLogged) {
+        persistentRateLimitWarningLogged = true;
+        console.warn(JSON.stringify({ event: "mcp_rate_limit_fallback", message: error instanceof Error ? error.message : "D1 rate limit unavailable" }));
+      }
+    }
+  }
+  return consumeMemoryRateLimit(request, limit, now);
+}
+
+function response(body: unknown, requestIdValue: string, status = 200, rate?: RateLimitResult, startedAt = Date.now()) {
   const headers = new Headers(baseHeaders);
   headers.set("X-Request-ID", requestIdValue);
   headers.set("X-Response-Time-Ms", String(Date.now() - startedAt));
@@ -49,7 +83,7 @@ function response(body: unknown, requestIdValue: string, status = 200, rate?: Re
   return new Response(body === null ? null : JSON.stringify(body), { status, headers });
 }
 
-function rpcError(id: string | number | null, code: number, message: string, requestIdValue: string, rate: ReturnType<typeof consumeRateLimit>, startedAt: number, data?: unknown, status = 400) {
+function rpcError(id: string | number | null, code: number, message: string, requestIdValue: string, rate: RateLimitResult, startedAt: number, data?: unknown, status = 400) {
   return response({ jsonrpc: "2.0", id, error: { code, message, ...(data === undefined ? {} : { data }) } }, requestIdValue, status, rate, startedAt);
 }
 
@@ -84,7 +118,7 @@ export async function GET(request: Request) {
   const startedAt = Date.now();
   const id = requestId(request);
   const config = getMcpRuntimeConfig();
-  const rate = consumeRateLimit(request, config.rateLimitPerMinute);
+  const rate = await consumeRateLimit(request, config.rateLimitPerMinute);
   if (!rate.allowed) return rpcError(null, -32029, "请求过于频繁，请稍后重试", id, rate, startedAt, { retryAfterSeconds: Math.ceil((rate.resetAt - Date.now()) / 1000) }, 429);
   if (!hasValidMcpAuthorization(request, config)) {
     logRequest(id, "GET", startedAt, "unauthorized");
@@ -98,7 +132,7 @@ export async function POST(request: Request) {
   const startedAt = Date.now();
   const id = requestId(request);
   const config = getMcpRuntimeConfig();
-  const rate = consumeRateLimit(request, config.rateLimitPerMinute);
+  const rate = await consumeRateLimit(request, config.rateLimitPerMinute);
   let method = "parse";
   if (!rate.allowed) return rpcError(null, -32029, "请求过于频繁，请稍后重试", id, rate, startedAt, { retryAfterSeconds: Math.ceil((rate.resetAt - Date.now()) / 1000) }, 429);
   if (!hasValidMcpAuthorization(request, config)) {
