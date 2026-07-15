@@ -2,6 +2,14 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Workspace invite handoff release 54
+
+- Git commit：`05319f94ca785128f85455db9c29af96eb50cfbc`
+- Sites：版本 54，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：可选 workspace invite URL；token 只放在 fragment，`/boards` 识别后由用户主动同步共享空间，服务端继续执行角色、过期和 quota 校验。
+- 边界：只有配置 `ARCHLENS_WORKSPACE_INVITE_BASE_URL` 才返回 invite URL；公开 Demo 不生成邀请链接，token 不进入查询参数或服务端请求日志。
+- 验证：构建、dataset audit、35 个 JavaScript 测试和 11 个 TypeScript 测试、GitHub CI 和 Sites 部署通过。
+
 ## 2026-07-15 · Scheduled source intake release 52
 
 - Git commit：`30bb718e889512eef9401efa33f9ceb40f1ff388`
