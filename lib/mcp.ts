@@ -81,7 +81,7 @@ export function callMcpTool(name: string, args: Record<string, unknown>) {
     const tag = optionalString(input, "tag").toLowerCase();
     if (projectType && !(projectTypes as readonly string[]).includes(projectType)) throw new McpToolError("INVALID_PARAMS", "projectType 不是支持的项目类型", { field: "projectType", allowed: projectTypes });
     if (region && !(regions as readonly string[]).includes(region)) throw new McpToolError("INVALID_PARAMS", "region 不是支持的地域", { field: "region", allowed: regions });
-    return cases.filter((item) => !query || [item.title, item.architect, item.location, item.typology, item.short, ...item.tags].join(" ").toLowerCase().includes(query)).filter((item) => !projectType || item.projectType === projectType).filter((item) => !region || item.region === region).filter((item) => !tag || item.tags.some((value) => value.toLowerCase().includes(tag))).map(compactCase);
+    return cases.filter((item) => !query || [item.title, item.architect, item.location, item.typology, item.short, item.context, item.principle, item.strategy, item.materialNotes, ...(item.researchQuestions ?? []), ...item.tags].filter(Boolean).join(" ").toLowerCase().includes(query)).filter((item) => !projectType || item.projectType === projectType).filter((item) => !region || item.region === region).filter((item) => !tag || item.tags.some((value) => value.toLowerCase().includes(tag))).map(compactCase);
   }
   if (name === "get_case") {
     return findRequiredCase(caseId(args));

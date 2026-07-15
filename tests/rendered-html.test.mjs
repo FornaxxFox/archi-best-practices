@@ -65,6 +65,10 @@ test("MCP case tools expose the same research-pack fields", async () => {
   const results = searchBody.result.structuredContent;
   assert.equal(results.length, 8);
 
+  const semanticSearchResponse = await call("search_cases", { query: "公共性" });
+  const semanticSearchBody = await semanticSearchResponse.json();
+  assert.ok(semanticSearchBody.result.structuredContent.length > 0);
+
   for (const result of results) {
     const caseResponse = await call("get_case", { case_id: result.id });
     const caseBody = await caseResponse.json();
