@@ -19,6 +19,12 @@ https://archlens.yiking233.chatgpt.site/api/mcp
 
 Endpoint 支持 `initialize`、`tools/list`、`tools/call` 和 `resources/list`，与网站使用同一份精选案例数据。不绑定模型供应商，客户端可以把返回的结构化上下文交给自己的 Agent 或模型。
 
+发布后可用健康检查确认数据集版本和案例数量：
+
+```bash
+curl -s https://archlens.yiking233.chatgpt.site/api/health
+```
+
 ## 快速验证
 
 先检查服务能力：

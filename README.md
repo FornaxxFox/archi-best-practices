@@ -19,6 +19,7 @@ npm run dev
 - `/project`：项目理念、任务、代码地图、预期和 Milestones
 - `/mcp`：MCP 工具说明与可运行 Playground
 - `/api/mcp`：无鉴权 MCP HTTP Endpoint
+- `/api/health`：协议、数据集版本和案例库就绪状态
 
 ## MCP
 

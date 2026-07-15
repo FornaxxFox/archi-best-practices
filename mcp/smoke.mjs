@@ -6,6 +6,10 @@ if (!endpoint) throw new Error("缺少 ARCHLENS_MCP_ENDPOINT，例如 https://<d
 const headers = { "content-type": "application/json" };
 if (authorization) headers["OAI-Sites-Authorization"] = authorization;
 
+const healthResponse = await fetch(new URL("/api/health", endpoint), { headers });
+const health = await healthResponse.json();
+if (!healthResponse.ok || health.status !== "ok" || health.dataset?.caseCount !== 12) throw new Error(`health 检查失败：${JSON.stringify(health)}`);
+
 let requestId = 0;
 async function rpc(method, params) {
   const response = await fetch(endpoint, {
@@ -13,14 +17,16 @@ async function rpc(method, params) {
     headers,
     body: JSON.stringify({ jsonrpc: "2.0", id: ++requestId, method, params }),
   });
-  const body = await response.json();
+  const raw = await response.text();
+  const body = raw ? JSON.parse(raw) : null;
   if (!response.ok) throw new Error(`${method} HTTP ${response.status}: ${JSON.stringify(body)}`);
-  if (body.error) throw new Error(`${method} JSON-RPC ${body.error.code}: ${body.error.message}`);
-  return body.result;
+  if (body?.error) throw new Error(`${method} JSON-RPC ${body.error.code}: ${body.error.message}`);
+  return body?.result;
 }
 
 const initialize = await rpc("initialize", { protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "archlens-smoke", version: "1.0.0" } });
 if (initialize.protocolVersion !== "2025-03-26") throw new Error(`协议版本不匹配：${initialize.protocolVersion}`);
+await rpc("notifications/initialized", {});
 
 const tools = await rpc("tools/list", {});
 const expectedTools = ["search_cases", "get_case", "extract_design_elements", "compare_cases", "build_research_pack"];
@@ -39,4 +45,4 @@ if (!item.structuredContent?.imageCredit?.license || !item.structuredContent?.so
 const pack = await rpc("tools/call", { name: "build_research_pack", arguments: { case_id: "heydar-aliyev-centre" } });
 if (!pack.structuredContent?.markdown?.includes("原始来源") || !pack.structuredContent?.readme?.includes("ArchLens Research Pack")) throw new Error("research pack 内容不完整");
 
-console.log(JSON.stringify({ endpoint, protocolVersion: initialize.protocolVersion, toolCount: actualTools.length, semanticSearchMatches: search.structuredContent.length, landscapeMatches: landscape.structuredContent.length, checkedCase: item.structuredContent.id, researchPack: "ok" }, null, 2));
+console.log(JSON.stringify({ endpoint, datasetVersion: health.dataset.version, protocolVersion: initialize.protocolVersion, toolCount: actualTools.length, semanticSearchMatches: search.structuredContent.length, landscapeMatches: landscape.structuredContent.length, checkedCase: item.structuredContent.id, researchPack: "ok" }, null, 2));

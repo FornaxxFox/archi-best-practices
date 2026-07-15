@@ -1,3 +1,4 @@
+import { getDatasetManifest } from "@/lib/dataset";
 import { callMcpTool, MCP_PROTOCOL_VERSION, MCP_SCHEMA_VERSION, MCP_SERVER_VERSION, McpToolError, mcpToolDefinitions } from "@/lib/mcp";
 
 const baseHeaders = {
@@ -78,7 +79,7 @@ export async function GET(request: Request) {
   const rate = consumeRateLimit(request);
   if (!rate.allowed) return rpcError(null, -32029, "请求过于频繁，请稍后重试", id, rate, startedAt, { retryAfterSeconds: Math.ceil((rate.resetAt - Date.now()) / 1000) }, 429);
   logRequest(id, "GET", startedAt, "ok");
-  return response({ name: "archlens", version: MCP_SERVER_VERSION, schemaVersion: MCP_SCHEMA_VERSION, protocol: MCP_PROTOCOL_VERSION, transport: "streamable-http", auth: "none", tools: mcpToolDefinitions.map((tool) => tool.name), endpoint: "/api/mcp" }, id, 200, rate, startedAt);
+  return response({ name: "archlens", version: MCP_SERVER_VERSION, schemaVersion: MCP_SCHEMA_VERSION, protocol: MCP_PROTOCOL_VERSION, transport: "streamable-http", auth: "none", dataset: getDatasetManifest(), tools: mcpToolDefinitions.map((tool) => tool.name), endpoint: "/api/mcp" }, id, 200, rate, startedAt);
 }
 
 export async function POST(request: Request) {
@@ -106,7 +107,7 @@ export async function POST(request: Request) {
     const messageId = message.id ?? null;
     if (method === "initialize") {
       logRequest(id, method, startedAt, "ok");
-      return response({ jsonrpc: "2.0", id: messageId, result: { protocolVersion: MCP_PROTOCOL_VERSION, capabilities: { tools: {} }, serverInfo: { name: "archlens", version: MCP_SERVER_VERSION, schemaVersion: MCP_SCHEMA_VERSION } } }, id, 200, rate, startedAt);
+      return response({ jsonrpc: "2.0", id: messageId, result: { protocolVersion: MCP_PROTOCOL_VERSION, capabilities: { tools: {} }, serverInfo: { name: "archlens", version: MCP_SERVER_VERSION, schemaVersion: MCP_SCHEMA_VERSION, dataset: getDatasetManifest() } } }, id, 200, rate, startedAt);
     }
     if (method === "notifications/initialized") {
       logRequest(id, method, startedAt, "ok");
@@ -118,7 +119,7 @@ export async function POST(request: Request) {
     }
     if (method === "resources/list") {
       logRequest(id, method, startedAt, "ok");
-      return response({ jsonrpc: "2.0", id: messageId, result: { resources: [{ uri: "archlens://cases", name: "ArchLens case library", description: "公开案例结构化索引" }] } }, id, 200, rate, startedAt);
+      return response({ jsonrpc: "2.0", id: messageId, result: { resources: [{ uri: "archlens://cases", name: "ArchLens case library", description: "公开案例结构化索引", metadata: getDatasetManifest() }] } }, id, 200, rate, startedAt);
     }
     if (method !== "tools/call") {
       logRequest(id, method, startedAt, "method_not_found");

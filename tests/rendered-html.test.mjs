@@ -49,9 +49,21 @@ test("MCP endpoint returns tool definitions and case data", async () => {
   assert.equal(body.name, "archlens");
   assert.equal(body.version, "0.2.0");
   assert.equal(body.schemaVersion, "1.0.0");
+  assert.equal(body.dataset.caseCount, 12);
+  assert.equal(body.dataset.version, "2026-07-15.1");
   assert.match(body.endpoint, /\/api\/mcp/);
   assert.match(response.headers.get("x-request-id") ?? "", /.+/);
   assert.equal(response.headers.get("mcp-schema-version"), "1.0.0");
+});
+
+test("health endpoint exposes dataset and protocol readiness", async () => {
+  const response = await render("/api/health");
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.status, "ok");
+  assert.equal(body.dataset.caseCount, 12);
+  assert.equal(body.dataset.kind, "curated-seed");
+  assert.equal(body.checks.caseLibrary, "ok");
 });
 
 test("MCP case tools expose the same research-pack fields", async () => {

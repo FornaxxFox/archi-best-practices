@@ -9,6 +9,7 @@ app/
   project/page.tsx       项目理念、任务与 Milestones
 lib/
   data.ts                案例资料、任务模板和展示元数据
+  dataset.ts             数据集版本与数量清单
   mcp.ts                 MCP 工具定义与领域逻辑
 skills/
   case-production/       案例生产 Skill
@@ -25,7 +26,7 @@ docs/                    项目理念、架构、路线图和协作说明
   → lib/data.ts
   → 网站案例库 + 资料包下载
   → lib/mcp.ts
-  → MCP contract / validation / observability
+  → MCP contract / validation / observability / dataset manifest
   → /api/mcp
   → 用户自己的 Agent / 模型
 ```
@@ -39,6 +40,8 @@ docs/                    项目理念、架构、路线图和协作说明
 - UI 只负责浏览、筛选、保存、下载和展示，不把推理成本藏在产品里。
 - 案例字段变更必须同步更新 Skill、MCP schema、下载资料包和测试。
 - 图片和原始材料的再分发权限必须单独记录。
+- `/api/health` 必须报告协议版本、数据集版本、案例数量和基础校验状态。
+- 发布记录必须保留 Git commit、Sites 版本和可执行回滚目标。
 
 ## 当前 Demo 的边界
 
