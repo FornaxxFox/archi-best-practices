@@ -9,6 +9,8 @@ export type CaseStudy = {
   scale: string;
   projectType: "文化" | "公共" | "居住" | "规划";
   gradient: string;
+  image: string;
+  imageCredit: { label: string; url: string; license: string };
   short: string;
   principle: string;
   strategy: string;
@@ -34,6 +36,8 @@ export const cases: CaseStudy[] = [
     scale: "101,801 m²",
     projectType: "文化",
     gradient: "linear-gradient(135deg, #d9d2c8 0%, #8d918d 42%, #222a29 100%)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/0/0e/HEYDAR_ALIYEV_CENTER_INDOORS.%D7%97%D7%9C%D7%9C_%D7%A4%D7%A0%D7%99%D7%9E%D7%99_%D7%9E%D7%95%D7%93%D7%A8%D7%A0%D7%99_%D7%91%D7%9E%D7%A8%D7%9B%D7%96_%D7%94%D7%99%D7%99%D7%93%D7%A8_%D7%90%D7%9C%D7%99%D7%99%D7%91.jpg",
+    imageCredit: { label: "Wikimedia Commons / CC0", url: "https://commons.wikimedia.org/wiki/File:HEYDAR_ALIYEV_CENTER_INDOORS.%D7%97%D7%9C%D7%9C_%D7%A4%D7%A0%D7%99%D7%9E%D7%99_%D7%9E%D7%95%D7%93%D7%A8%D7%A0%D7%99_%D7%91%D7%9E%D7%A8%D7%9B%D7%96_%D7%94%D7%99%D7%99%D7%93%D7%A8_%D7%90%D7%9C%D7%99%D7%99%D7%91.jpg", license: "CC0" },
     short: "连续曲面把广场、建筑和公共活动编织成一条可步行的地景。",
     principle: "通过连续的公共地面消解建筑与城市之间的边界，让文化建筑成为可进入的城市地形。",
     strategy: "将广场、入口大厅和主要公共空间组织成一条无台阶的流线，曲面外皮同时承担导向与识别。",
@@ -57,6 +61,8 @@ export const cases: CaseStudy[] = [
     scale: "27,000 m²",
     projectType: "文化",
     gradient: "linear-gradient(145deg, #222322 5%, #5e665f 47%, #b7b9af 100%)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/4/43/More_than_meets_the_eye_MAXXI_Roma_2015.jpg",
+    imageCredit: { label: "Wikimedia Commons / CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:More_than_meets_the_eye_MAXXI_Roma_2015.jpg", license: "CC BY-SA 4.0" },
     short: "多条交叉的展览路径让建筑成为可持续变化的空间框架。",
     principle: "让展览路径、城市流线和时间性的艺术事件共同塑造空间，而不是用单一轴线规定观看。",
     strategy: "用交叉、悬挑和上方采光带组织可变展厅，让不同尺度的展览在同一框架里切换。",
@@ -80,6 +86,8 @@ export const cases: CaseStudy[] = [
     scale: "852 m²",
     projectType: "公共",
     gradient: "linear-gradient(120deg, #1b2429 0%, #697472 40%, #d4c6b6 100%)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/a/a0/Vitra_Campus_-_Hadid_Fire_Station_-_full_view%2C_blue_sky.jpg",
+    imageCredit: { label: "Wikimedia Commons / CC0", url: "https://commons.wikimedia.org/wiki/File:Vitra_Campus_-_Hadid_Fire_Station_-_full_view,_blue_sky.jpg", license: "CC0" },
     short: "锐利的线性墙体把速度、警觉和队列感凝固成空间。",
     principle: "从行动状态出发组织建筑，使结构、动线和视觉张力服务于即时响应。",
     strategy: "用折线墙体定义开放的车辆场地和内部秩序，避免传统房间式分隔。",
@@ -103,6 +111,8 @@ export const cases: CaseStudy[] = [
     scale: "62,000 m²",
     projectType: "居住",
     gradient: "linear-gradient(135deg, #81918e 0%, #c7c0ae 43%, #404d51 100%)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/9/96/BIG_-_8_House.jpg",
+    imageCredit: { label: "Wikimedia Commons / CC BY 2.0", url: "https://commons.wikimedia.org/wiki/File:BIG_-_8_House.jpg", license: "CC BY 2.0" },
     short: "一条连续上升的公共路径把办公、商业和居住串成混合社区。",
     principle: "通过把不同功能混合在一条可步行的框架里，让日常活动共享空间价值。",
     strategy: "环形体量在不同角部抬升和压低，使住宅获得阳光与视野，底层商业面向街道。",
@@ -126,6 +136,8 @@ export const cases: CaseStudy[] = [
     scale: "地下场地",
     projectType: "文化",
     gradient: "linear-gradient(135deg, #d7d7cd 0%, #71807b 42%, #283535 100%)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Chichu_art_museum02s2560.jpg",
+    imageCredit: { label: "Wikimedia Commons / CC BY 2.5", url: "https://commons.wikimedia.org/wiki/File:Chichu_art_museum02s2560.jpg", license: "CC BY 2.5" },
     short: "把大部分建筑埋入地下，让自然光成为展览体验的一部分。",
     principle: "以最小的地表干预保护场地自然性，并让光线、时间和艺术共同构成空间。",
     strategy: "用地下几何体量和天井引入自然光，组织作品、路径和季节变化之间的关系。",
@@ -149,6 +161,8 @@ export const cases: CaseStudy[] = [
     scale: "79,000 m²",
     projectType: "文化",
     gradient: "linear-gradient(135deg, #d9e3e0 0%, #89999b 44%, #25343b 100%)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/3/34/Harbin_Grand_Theatre_Pano_201609.jpg",
+    imageCredit: { label: "Wikimedia Commons / CC BY 2.0", url: "https://commons.wikimedia.org/wiki/File:Harbin_Grand_Theatre_Pano_201609.jpg", license: "CC BY 2.0" },
     short: "流动的白色外壳回应寒地风景，把公共平台推向松花江。",
     principle: "把建筑看作被风和水塑形的地貌，让公共活动沿着外壳连续展开。",
     strategy: "以折叠的外皮包裹大小剧场，并把屋顶、广场和观景路径连接成公共地形。",
@@ -172,6 +186,8 @@ export const cases: CaseStudy[] = [
     scale: "20,000 m²",
     projectType: "公共",
     gradient: "linear-gradient(135deg, #e8e2d3 0%, #a8b2aa 42%, #4e6268 100%)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Rolex_Learning_center.jpg",
+    imageCredit: { label: "Wikimedia Commons / CC BY-SA 3.0", url: "https://commons.wikimedia.org/wiki/File:Rolex_Learning_center.jpg", license: "CC BY-SA 3.0" },
     short: "连续起伏的地面把学习、交流、阅读和休憩放在同一个开放平面。",
     principle: "用连续而非分隔的空间支持不同强度的学习与社交，让公共性成为组织工具。",
     strategy: "以缓坡、天井和大跨度结构塑造开放平面，活动密度随着地形和光线变化。",
@@ -195,6 +211,8 @@ export const cases: CaseStudy[] = [
     scale: "21,682 m²",
     projectType: "公共",
     gradient: "linear-gradient(135deg, #d8d6ca 0%, #9caa9c 43%, #394e4c 100%)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/1/14/Sendai_Mediatheque_2009.jpg",
+    imageCredit: { label: "Wikimedia Commons / CC BY 2.0", url: "https://commons.wikimedia.org/wiki/File:Sendai_Mediatheque_2009.jpg", license: "CC BY 2.0" },
     short: "树状结构管把不同媒介和公共活动叠合在一个透明框架里。",
     principle: "用基础设施而不是固定房间定义公共建筑，让信息、光线和人的流动保持开放。",
     strategy: "以十三根结构管承载设备、交通和环境系统，楼板保持尽可能自由的公共平面。",
