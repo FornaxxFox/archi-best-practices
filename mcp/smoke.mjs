@@ -1,5 +1,6 @@
 const endpoint = process.env.ARCHLENS_MCP_ENDPOINT;
 const authorization = process.env.OAI_SITES_AUTHORIZATION;
+const expectedVersions = { server: "0.4.0", schema: "1.2.0", protocol: "2025-03-26" };
 
 if (!endpoint) throw new Error("缺少 ARCHLENS_MCP_ENDPOINT，例如 https://<domain>/api/mcp");
 
@@ -9,6 +10,9 @@ if (authorization) headers["OAI-Sites-Authorization"] = authorization;
 const healthResponse = await fetch(new URL("/api/health", endpoint), { headers });
 const health = await healthResponse.json();
 if (!healthResponse.ok || health.status !== "ok" || health.dataset?.caseCount !== 18) throw new Error(`health 检查失败：${JSON.stringify(health)}`);
+for (const [key, expected] of Object.entries(expectedVersions)) {
+  if (health.versions?.[key] !== expected) throw new Error(`${key} 版本不匹配：期望 ${expected}，实际 ${health.versions?.[key] ?? "missing"}`);
+}
 
 let requestId = 0;
 async function rpc(method, params) {
@@ -25,7 +29,8 @@ async function rpc(method, params) {
 }
 
 const initialize = await rpc("initialize", { protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "archlens-smoke", version: "1.0.0" } });
-if (initialize.protocolVersion !== "2025-03-26") throw new Error(`协议版本不匹配：${initialize.protocolVersion}`);
+if (initialize.protocolVersion !== expectedVersions.protocol) throw new Error(`协议版本不匹配：${initialize.protocolVersion}`);
+if (initialize.serverInfo?.version !== expectedVersions.server || initialize.serverInfo?.schemaVersion !== expectedVersions.schema) throw new Error(`initialize 服务版本不匹配：${JSON.stringify(initialize.serverInfo)}`);
 if (!initialize.capabilities?.resources || !initialize.capabilities?.prompts || !initialize.capabilities?.tools) throw new Error("initialize 缺少 tools/resources/prompts capability");
 await rpc("notifications/initialized", {});
 
@@ -73,4 +78,4 @@ if (prompts.prompts?.length !== 4) throw new Error(`研究提示数量异常：$
 const prompt = await rpc("prompts/get", { name: "extract-design-thinking", arguments: { case_id: "heydar-aliyev-centre" } });
 if (!prompt.messages?.[0]?.content?.text?.includes("build_research_pack") || !prompt.messages[0].content.text.includes("原始来源")) throw new Error("研究提示内容不完整");
 
-console.log(JSON.stringify({ endpoint, datasetVersion: health.dataset.version, protocolVersion: initialize.protocolVersion, toolCount: actualTools.length, resourceCount: resources.resources.length, resourceTemplateCount: templates.resourceTemplates.length, promptCount: prompts.prompts.length, semanticSearchMatches: search.structuredContent.length, briefMatches: matches.structuredContent.results.length, landscapeMatches: landscape.structuredContent.length, checkedCase: item.structuredContent.id, researchPack: "ok", caseCollection: "ok", caseResource: "ok", prompt: "ok" }, null, 2));
+console.log(JSON.stringify({ endpoint, datasetVersion: health.dataset.version, serverVersion: initialize.serverInfo.version, schemaVersion: initialize.serverInfo.schemaVersion, protocolVersion: initialize.protocolVersion, toolCount: actualTools.length, resourceCount: resources.resources.length, resourceTemplateCount: templates.resourceTemplates.length, promptCount: prompts.prompts.length, semanticSearchMatches: search.structuredContent.length, briefMatches: matches.structuredContent.results.length, landscapeMatches: landscape.structuredContent.length, checkedCase: item.structuredContent.id, researchPack: "ok", caseCollection: "ok", caseResource: "ok", prompt: "ok" }, null, 2));
