@@ -2,6 +2,14 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · User-owned workflow templates release 37
+
+- Git commit：`ead3e03b950ccb622de1317b8f40baf2dc404a26`
+- Sites：版本 37，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：3 个短研究工作流 manifest，覆盖设计思路提取、元素/颜色提取和案例策略比较；新增零依赖 `workflow:check` 校验器。
+- 边界：模板只编排现有只读 MCP，不绑定模型、不保存用户调用、不自动抓取或发布案例；输出强制保留来源链接。
+- 验证：本地构建、dataset audit、29 个 JavaScript 测试和 4 个 TypeScript contract 测试通过；workflow check、lint、GitHub CI 和生产部署通过。
+
 ## 2026-07-15 · Source review queue release 35
 
 - Git commit：`d8c2deee2a5dd1cfc8f01016e0915cbc041a671b`
