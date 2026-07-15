@@ -2,6 +2,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { workspaceAuditEvents, workspaceMembers, workspaceSpaces } from "@/db/schema";
 import { generateWorkspaceToken, hashWorkspaceToken, isWorkspaceRole, workspaceTokenExpiry, type WorkspaceRole } from "@/lib/workspace-auth";
+import { buildWorkspaceInviteUrl } from "@/lib/workspace-invite";
 import { consumeWorkspaceQuota, type WorkspaceQuotaResult } from "@/lib/workspace-rate-limit";
 import { getMcpRuntimeConfig, hasValidWorkspaceAuthorization } from "@/lib/runtime-config";
 
@@ -89,7 +90,8 @@ export async function POST(request: Request) {
       db.insert(workspaceMembers).values({ id: `${spaceId}:${memberId}`, spaceId, memberId, label: memberLabel, role, tokenHash, createdAt: now, expiresAt, revokedAt: null }),
       db.insert(workspaceAuditEvents).values({ id: crypto.randomUUID(), spaceId, memberId, actor: "operator", action: "member.invited", detailJson: JSON.stringify({ role, label: memberLabel, expiresAt }), createdAt: now }),
     ]);
-    return Response.json({ member: { spaceId, memberId, label: memberLabel, role, createdAt: now, expiresAt, revokedAt: null }, token, warning: "token 只返回这一次，请立即交给成员并安全保存" }, { status: 201, headers: jsonHeaders });
+    const inviteUrl = config.workspaceInviteBaseUrl ? buildWorkspaceInviteUrl(config.workspaceInviteBaseUrl, { spaceId, memberId, token, expiresAt }) : undefined;
+    return Response.json({ member: { spaceId, memberId, label: memberLabel, role, createdAt: now, expiresAt, revokedAt: null }, token, ...(inviteUrl ? { inviteUrl } : {}), warning: "token 只返回这一次，请立即交给成员并安全保存；inviteUrl 使用 URL fragment，不会随 HTTP 请求发送" }, { status: 201, headers: jsonHeaders });
   } catch (error) {
     const message = error instanceof Error ? error.message : "成员邀请失败";
     const status = message.includes("UNIQUE") || message.includes("unique") ? 409 : message.includes("必须") || message.includes("只能") || message.includes("超过") || message.includes("对象") ? 422 : 503;

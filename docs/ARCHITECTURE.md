@@ -60,7 +60,7 @@ docs/                    项目理念、架构、路线图和协作说明
 - 用户工作流以仓库内 manifest 形式存在，调用只读 MCP；ArchLens 不保存模型调用、不绑定模型供应商。
 - 工作区快照包含数据集版本、收藏、评分和最近研究任务；导入只恢复当前浏览器状态，不向服务端写入数据。
 - 来源审核通过后只能生成发布候选，必须经过人工 PR 和 dataset audit 才能改变案例数据集。
-- D1 共享工作区只有在独立 `ARCHLENS_WORKSPACE_TOKEN` 与 `ARCHLENS_WORKSPACE_WRITE_ENABLED=true` 同时配置时才可写；公开 Demo 默认关闭。operator 可以签发带过期时间的 editor/viewer 一次性成员 token，成员访问按空间和角色校验，并由独立 D1 quota bucket 限制请求频率。
+- D1 共享工作区只有在独立 `ARCHLENS_WORKSPACE_TOKEN` 与 `ARCHLENS_WORKSPACE_WRITE_ENABLED=true` 同时配置时才可写；公开 Demo 默认关闭。operator 可以签发带过期时间的 editor/viewer 一次性成员 token，成员访问按空间和角色校验，并由独立 D1 quota bucket 限制请求频率；可选邀请链接把 token 放在 fragment，由用户主动同步。
 - 案例字段变更必须同步更新 Skill、MCP schema、下载资料包和测试。
 - 图片和原始材料的再分发权限必须单独记录。
 - `/api/health` 必须报告协议版本、数据集版本、案例数量和基础校验状态。
@@ -71,4 +71,4 @@ docs/                    项目理念、架构、路线图和协作说明
 
 ## 当前 Demo 的边界
 
-当前案例数据是本地精选种子数据，MCP 公开 Demo 默认无鉴权，工作区默认使用浏览器本地存储，也可以导出为带数据集版本的 JSON 快照。来源 intake 已提供单案例/目录级抓取与解析入口、可复用的 GitHub 定时 workflow，并新增可选 D1 证据登记和带成员角色/审计/过期控制/配额的 operator-token 共享空间；邀请链接、自动入库和更复杂的配额治理仍属于 M4 后续阶段。
+当前案例数据是本地精选种子数据，MCP 公开 Demo 默认无鉴权，工作区默认使用浏览器本地存储，也可以导出为带数据集版本的 JSON 快照。来源 intake 已提供单案例/目录级抓取与解析入口、可复用的 GitHub 定时 workflow，并新增可选 D1 证据登记和带成员角色/审计/过期控制/配额/邀请链接的 operator-token 共享空间；自动入库和更复杂的配额治理仍属于 M4 后续阶段。

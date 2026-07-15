@@ -11,6 +11,7 @@ export type McpRuntimeConfig = {
   workspaceWriteEnabled: boolean;
   workspaceMaxSnapshotBytes: number;
   workspaceRateLimitPerMinute: number;
+  workspaceInviteBaseUrl: string;
 };
 
 function env(name: string) {
@@ -43,6 +44,7 @@ export function getMcpRuntimeConfig(): McpRuntimeConfig {
     workspaceWriteEnabled: booleanEnv(env("ARCHLENS_WORKSPACE_WRITE_ENABLED")),
     workspaceMaxSnapshotBytes: positiveInteger(env("ARCHLENS_WORKSPACE_MAX_SNAPSHOT_BYTES"), 500_000, 5_000_000),
     workspaceRateLimitPerMinute: positiveInteger(env("ARCHLENS_WORKSPACE_RATE_LIMIT_PER_MINUTE"), 120),
+    workspaceInviteBaseUrl: env("ARCHLENS_WORKSPACE_INVITE_BASE_URL"),
   };
 }
 

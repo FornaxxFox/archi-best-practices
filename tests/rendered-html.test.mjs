@@ -89,6 +89,7 @@ test("health endpoint exposes dataset and protocol readiness", async () => {
   assert.equal(body.sourceIntake.writeEnabled, false);
   assert.equal(body.workspace.storage, "disabled");
   assert.equal(body.workspace.memberPermissions, "disabled");
+  assert.equal(body.workspace.inviteLinks, false);
   assert.equal(body.workspace.writeEnabled, false);
   assert.equal(body.workspace.rateLimitPerMinute, 120);
 });

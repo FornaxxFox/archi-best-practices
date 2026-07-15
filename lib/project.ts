@@ -51,6 +51,7 @@ export const codeMap = [
   { path: "lib/workspace.ts", label: "工作区快照", body: "校验带数据集版本的收藏、评分和最近研究任务，可通过文件安全交接。" },
   { path: "app/api/workspaces/route.ts", label: "共享工作区 API", body: "可选的 D1 空间读写接口，默认关闭并要求独立 operator token。" },
   { path: "lib/workspace-rate-limit.ts", label: "工作区配额", body: "按空间身份使用 D1 quota bucket，超过配额返回可重试的 429，缺少 migration 时 fail-closed。" },
+  { path: "lib/workspace-invite.ts", label: "共享邀请链接", body: "将一次性返回的成员 token 放入 URL fragment，由工作区页面在用户操作后同步并继续走服务端鉴权。" },
   { path: "lib/data.ts", label: "案例知识", body: "案例资料卡、任务模板和 MCP 工具展示元数据。" },
   { path: "lib/mcp.ts", label: "MCP 领域层", body: "工具定义、案例检索、结构化提取、比较和资料包生成。" },
   { path: "app/api/mcp/route.ts", label: "MCP HTTP 接口", body: "无鉴权 Demo Endpoint，承接 initialize、tools/list 和 tools/call。" },

@@ -129,6 +129,8 @@ npm run source:proposal -- \
 ARCHLENS_WORKSPACE_TOKEN=<strong-random-token>
 ARCHLENS_WORKSPACE_WRITE_ENABLED=true
 ARCHLENS_WORKSPACE_MAX_SNAPSHOT_BYTES=500000
+ARCHLENS_WORKSPACE_RATE_LIMIT_PER_MINUTE=120
+ARCHLENS_WORKSPACE_INVITE_BASE_URL=https://<your-domain>
 ```
 
 接口：
@@ -160,6 +162,6 @@ curl -X DELETE "https://<your-domain>/api/workspaces/members?space_id=studio-res
   -H "Authorization: Bearer $ARCHLENS_WORKSPACE_TOKEN"
 ```
 
-`viewer` 只能读取指定空间，`editor` 可以更新快照，operator/owner 才能创建空间、邀请和撤销成员。成员 token 只保存 SHA-256 hash，默认 30 天过期，可通过 `expiresInDays` 设置为 1–365 天；成员邀请和撤销会写入 `workspace_audit_events`。当前不支持邀请链接和多 operator。
+`viewer` 只能读取指定空间，`editor` 可以更新快照，operator/owner 才能创建空间、邀请和撤销成员。成员 token 只保存 SHA-256 hash，默认 30 天过期，可通过 `expiresInDays` 设置为 1–365 天；成员邀请和撤销会写入 `workspace_audit_events`。配置 `ARCHLENS_WORKSPACE_INVITE_BASE_URL` 后，邀请响应会额外返回 `/boards#archlens-invite=...` 链接，token 位于 URL fragment，不会随 HTTP 请求发送；打开后需在工作区页面主动点击同步。当前不支持多 operator。
 
 共享工作区接口还支持独立的 D1 配额。`ARCHLENS_WORKSPACE_RATE_LIMIT_PER_MINUTE` 默认是每个空间身份每分钟 120 次；超出时返回 429 和 `Retry-After`，配额表未完成 migration 时接口返回 503，不会退化为无限制写入。
