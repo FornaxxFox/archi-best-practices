@@ -40,6 +40,14 @@ npm run source:audit -- --input ./case.json --out ./research-packs/<case-id>/sou
 
 这个步骤只使用 Node.js 标准库，按顺序读取 HTTPS 页面，记录状态、标题、描述、canonical 和有上限的短摘录；它不会下载图片、保存整页内容或自动生成事实。随后 `case:pack` 会校验必填字段、HTTPS 来源、图像许可、数组字段和 HEX 颜色，并输出 `case.json`、`research-pack.md`、`README.md` 三件套。来源采集和编辑判断仍由贡献者负责。
 
+审核来源后，把报告带进资料包：
+
+```bash
+npm run case:pack -- --input ./case.json --out ./research-packs/<case-id> --source-report ./research-packs/<case-id>/sources/source-report.json
+```
+
+带上 `--source-report` 时，资料包会额外包含 `source-report.json`，并在 Markdown/README 中标明它是来源复核证据，不是自动生成的事实。
+
 批量处理多个 `case.json` 时使用：
 
 ```bash

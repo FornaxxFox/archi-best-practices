@@ -80,10 +80,10 @@ ARCHLENS_MCP_ENDPOINT="https://<your-domain>/api/mcp" npm run mcp:smoke
 
 ```bash
 npm run source:audit -- --input ./case.json --out ./research-packs/my-case/sources
-npm run case:pack -- --input ./case.json --out ./research-packs/my-case
+npm run case:pack -- --input ./case.json --out ./research-packs/my-case --source-report ./research-packs/my-case/sources/source-report.json
 ```
 
-来源 intake 只读取 HTTPS 页面标题、描述、canonical 和有界短摘录，输出来源状态报告；不下载图片、不保存整页内容、不生成事实。随后 case pack 脚本会拒绝缺少来源、许可、风险或结构化字段的输入，并生成可下载、可审阅、可继续被 Agent 读取的三件套。网站和 MCP 运行时仍使用 `lib/data.ts`，合并前应把通过校验的字段同步到案例库。
+来源 intake 只读取 HTTPS 页面标题、描述、canonical 和有界短摘录，输出来源状态报告；不下载图片、不保存整页内容、不生成事实。带上 `--source-report` 后，case pack 会校验案例 ID 和来源 URL，并把报告一起复制进资料包。随后 case pack 脚本会拒绝缺少来源、许可、风险或结构化字段的输入，并生成可下载、可审阅、可继续被 Agent 读取的资料包。网站和 MCP 运行时仍使用 `lib/data.ts`，合并前应把通过校验的字段同步到案例库。
 
 ## Tools
 
