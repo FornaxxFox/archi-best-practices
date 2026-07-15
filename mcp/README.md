@@ -79,10 +79,11 @@ ARCHLENS_MCP_ENDPOINT="https://<your-domain>/api/mcp" npm run mcp:smoke
 案例贡献者可以先复制 [`skills/case-production/case.template.json`](../skills/case-production/case.template.json)，完成来源和编辑字段，再使用仓库内置的零依赖脚本：
 
 ```bash
+npm run source:audit -- --input ./case.json --out ./research-packs/my-case/sources
 npm run case:pack -- --input ./case.json --out ./research-packs/my-case
 ```
 
-脚本会拒绝缺少来源、许可、风险或结构化字段的输入，并生成可下载、可审阅、可继续被 Agent 读取的三件套。网站和 MCP 运行时仍使用 `lib/data.ts`，合并前应把通过校验的字段同步到案例库。
+来源 intake 只读取 HTTPS 页面标题、描述、canonical 和有界短摘录，输出来源状态报告；不下载图片、不保存整页内容、不生成事实。随后 case pack 脚本会拒绝缺少来源、许可、风险或结构化字段的输入，并生成可下载、可审阅、可继续被 Agent 读取的三件套。网站和 MCP 运行时仍使用 `lib/data.ts`，合并前应把通过校验的字段同步到案例库。
 
 ## Tools
 

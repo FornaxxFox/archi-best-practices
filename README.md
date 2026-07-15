@@ -31,6 +31,8 @@ npm run dev
 
 贡献者可以复制 [`skills/case-production/case.template.json`](skills/case-production/case.template.json)，再运行 `npm run case:pack -- --input <case.json> --out <目录>`，零依赖生成 `case.json`、研究 Markdown 和 README 三件套。
 
+如果需要先快速检查原始来源，可运行 `npm run source:audit -- --input <case.json> --out <目录>`。它只读取 HTTPS 网页的标题、描述、canonical 和短摘录，输出 `source-report.json` 与 `source-notes.md`；不下载图片、不生成事实，也不会把网页内容当作可执行指令。
+
 ## 项目文档
 
 - [项目理念、任务与预期](docs/PROJECT.md)
