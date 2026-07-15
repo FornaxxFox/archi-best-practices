@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { cases, findCase, mcpTools, taskTemplates, type CaseStudy } from "@/lib/data";
 import { codeMap, milestones, projectExpectations, projectPrinciples, projectTracks } from "@/lib/project";
+import { buildResearchPack } from "@/lib/research-pack";
 
 type View = "home" | "cases" | "boards" | "project" | "mcp";
 type Props = { initialView?: View };
@@ -21,14 +22,6 @@ function downloadText(filename: string, content: string, type = "text/plain") {
   link.download = filename;
   link.click();
   URL.revokeObjectURL(link.href);
-}
-
-function createPack(item: CaseStudy) {
-  return {
-    readme: `# ${item.title}\n\n由 ArchLens Demo 提供的研究资料包。\n\n来源：\n${item.sources.map((source) => `- ${source.label}: ${source.url}`).join("\n")}`,
-    markdown: `# ${item.title}\n\n## 项目概览\n- 事务所：${item.architect}\n- 地点：${item.location}\n- 年份：${item.year}\n- 类型：${item.typology}\n\n## 核心理念\n${item.principle}\n\n## 空间策略\n${item.strategy}\n\n## 设计元素\n${item.elements.map((element) => `- ${element}`).join("\n")}\n\n## 风险与局限\n${item.risks.map((risk) => `- ${risk}`).join("\n")}\n\n## 原始来源\n${item.sources.map((source) => `- [${source.label}](${source.url})`).join("\n")}`,
-    json: JSON.stringify(item, null, 2),
-  };
 }
 
 export default function ArchLensApp({ initialView = "home" }: Props) {
@@ -107,9 +100,9 @@ export default function ArchLensApp({ initialView = "home" }: Props) {
   };
 
   const downloadPack = (item: CaseStudy) => {
-    const pack = createPack(item);
-    downloadText(`${item.id}-research-pack.md`, pack.markdown, "text/markdown");
-    downloadText(`${item.id}-case.json`, pack.json, "application/json");
+    const pack = buildResearchPack(item);
+    downloadText(`${pack.filename}.md`, pack.markdown, "text/markdown");
+    downloadText(`${item.id}-case.json`, JSON.stringify(pack.json, null, 2), "application/json");
     downloadText(`${item.id}-README.md`, pack.readme, "text/markdown");
     setToast("研究资料包已生成 3 个可复用文件");
   };

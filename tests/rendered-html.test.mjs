@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-async function render(path = "/") {
+async function render(path = "/", init = {}) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
   return worker.fetch(
-    new Request(`http://localhost${path}`, { headers: { accept: "text/html" } }),
+    new Request(`http://localhost${path}`, { headers: { accept: "text/html" }, ...init }),
     { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
     { waitUntil() {}, passThroughOnException() {} },
   );
@@ -48,4 +48,34 @@ test("MCP endpoint returns tool definitions and case data", async () => {
   const body = await response.json();
   assert.equal(body.name, "archlens");
   assert.match(body.endpoint, /\/api\/mcp/);
+});
+
+test("MCP case tools expose the same research-pack fields", async () => {
+  const call = (name, args) => render("/api/mcp", {
+    method: "POST",
+    headers: { accept: "application/json", "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name, arguments: args } }),
+  });
+  const searchResponse = await call("search_cases", {});
+  const searchBody = await searchResponse.json();
+  const results = searchBody.result.structuredContent;
+  assert.equal(results.length, 8);
+
+  for (const result of results) {
+    const caseResponse = await call("get_case", { case_id: result.id });
+    const caseBody = await caseResponse.json();
+    const item = caseBody.result.structuredContent;
+    assert.ok(item.imageCredit.license);
+    assert.ok(item.sources.length > 0);
+    assert.ok(item.researchQuestions.length > 0);
+
+    const packResponse = await call("build_research_pack", { case_id: result.id });
+    const packBody = await packResponse.json();
+    const pack = packBody.result.structuredContent;
+    assert.match(pack.markdown, /研究问题/);
+    assert.match(pack.markdown, /图像署名与许可/);
+    assert.match(pack.readme, /ArchLens Research Pack/);
+    assert.deepEqual(pack.json.imageCredit, item.imageCredit);
+    assert.deepEqual(pack.json.sources, item.sources);
+  }
 });

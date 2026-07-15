@@ -1,4 +1,5 @@
 import { cases, findCase, mcpTools, type CaseStudy } from "./data";
+import { buildResearchPack } from "./research-pack";
 
 export const mcpToolDefinitions = [
   {
@@ -29,16 +30,7 @@ export const mcpToolDefinitions = [
 ];
 
 function compactCase(item: CaseStudy) {
-  return { id: item.id, title: item.title, architect: item.architect, location: item.location, typology: item.typology, projectType: item.projectType, tags: item.tags, short: item.short, source: item.sources[0]?.url };
-}
-
-function researchPack(item: CaseStudy) {
-  return {
-    filename: `${item.id}-research-pack`,
-    readme: `# ${item.title}\n\n资料包由 ArchLens Demo 生成。所有事实判断应回到原始来源核验。\n\n来源：${item.sources.map((source) => `- ${source.label}: ${source.url}`).join("\n")}`,
-    markdown: [`# ${item.title}`, `\n## 项目概览\n- 事务所：${item.architect}\n- 地点：${item.location}\n- 年份：${item.year}\n- 类型：${item.typology}\n- 规模：${item.scale}`, `\n## 核心理念\n${item.principle}`, `\n## 空间策略\n${item.strategy}`, `\n## 设计元素\n${item.elements.map((element) => `- ${element}`).join("\n")}`, `\n## 风险与局限\n${item.risks.map((risk) => `- ${risk}`).join("\n")}`, `\n## 原始来源\n${item.sources.map((source) => `- [${source.label}](${source.url})`).join("\n")}`].join("\n"),
-    json: item,
-  };
+  return { id: item.id, title: item.title, architect: item.architect, location: item.location, year: item.year, scale: item.scale, typology: item.typology, projectType: item.projectType, region: item.region, tags: item.tags, short: item.short, image: item.image, imageCredit: item.imageCredit, sources: item.sources };
 }
 
 export function callMcpTool(name: string, args: Record<string, unknown>) {
@@ -57,7 +49,7 @@ export function callMcpTool(name: string, args: Record<string, unknown>) {
   if (name === "extract_design_elements") {
     const item = findCase(String(args.case_id ?? ""));
     if (!item) throw new Error("找不到这个案例");
-    return { case_id: item.id, title: item.title, principle: item.principle, strategy: item.strategy, elements: item.elements, palette: item.palette, tags: item.tags, risks: item.risks, sources: item.sources };
+    return { case_id: item.id, title: item.title, context: item.context, principle: item.principle, strategy: item.strategy, researchQuestions: item.researchQuestions, elements: item.elements, palette: item.palette, materialNotes: item.materialNotes, tags: item.tags, risks: item.risks, imageCredit: item.imageCredit, sources: item.sources };
   }
   if (name === "compare_cases") {
     const ids = Array.isArray(args.case_ids) ? args.case_ids.map(String) : [];
@@ -66,8 +58,7 @@ export function callMcpTool(name: string, args: Record<string, unknown>) {
   if (name === "build_research_pack") {
     const item = findCase(String(args.case_id ?? ""));
     if (!item) throw new Error("找不到这个案例");
-    return researchPack(item);
+    return buildResearchPack(item);
   }
   throw new Error(`未知工具：${name}`);
 }
-
