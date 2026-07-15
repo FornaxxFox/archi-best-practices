@@ -512,6 +512,9 @@ export const mcpTools = [
   { name: "extract_design_elements", label: "提取设计元素", description: "返回结构化的理念、空间策略、元素和颜色。" },
   { name: "compare_cases", label: "比较案例", description: "用同一套字段比较多个案例，方便外部 Agent 继续工作。" },
   { name: "build_research_pack", label: "生成资料包", description: "输出可下载的 Markdown/JSON/README 研究资料包内容。" },
+  { name: "list_case_facets", label: "浏览分类", description: "列出项目类型、地域、标签、元素和建筑师及其案例数量。" },
+  { name: "match_cases_to_brief", label: "匹配研究任务", description: "用可解释的固定权重，把研究任务匹配到相关案例。" },
+  { name: "build_case_collection", label: "生成案例集合", description: "汇总多个案例的比较字段、研究问题、风险和来源清单。" },
 ];
 
 export function findCase(id: string) {

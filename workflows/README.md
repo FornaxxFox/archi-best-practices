@@ -17,6 +17,7 @@ npm run workflow:check
 | `extract-design-thinking.json` | 快速理解一个案例的理念和空间策略 | `get_case`、`extract_design_elements`、`build_research_pack` |
 | `elements-palette.json` | 整理设计元素、颜色和材料线索 | `extract_design_elements`、`get_case` |
 | `compare-cases.json` | 比较两个案例的策略和迁移条件 | `compare_cases`、`build_research_pack` |
+| `match-brief.json` | 从研究任务匹配案例并形成多案例集合 | `list_case_facets`、`match_cases_to_brief`、`build_case_collection` |
 
 ## 边界
 

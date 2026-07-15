@@ -1,7 +1,7 @@
 # ArchLens MCP
 
 ArchLens exposes a real no-auth Streamable HTTP MCP-compatible endpoint at `/api/mcp`.
-当前契约版本为 `1.0.0`，服务版本为 `0.2.0`。
+当前契约版本为 `1.1.0`，服务版本为 `0.3.0`。
 
 ## Connection
 
@@ -17,7 +17,7 @@ https://<your-domain>/api/mcp
 https://archlens.yiking233.chatgpt.site/api/mcp
 ```
 
-Endpoint 支持 `initialize`、`tools/list`、`tools/call` 和 `resources/list`，与网站使用同一份精选案例数据。不绑定模型供应商，客户端可以把返回的结构化上下文交给自己的 Agent 或模型。
+Endpoint 支持 `initialize`、`tools/list`、`tools/call`、`resources/list` 和 `resources/read`，与网站使用同一份精选案例数据。不绑定模型供应商，客户端可以把返回的结构化上下文交给自己的 Agent 或模型。
 
 发布后可用健康检查确认数据集版本和案例数量：
 
@@ -48,6 +48,22 @@ curl -s "$ARCHLENS_ENDPOINT" \
 curl -s "$ARCHLENS_ENDPOINT" \
   -H 'content-type: application/json' \
   --data '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"build_research_pack","arguments":{"case_id":"heydar-aliyev-centre"}}}'
+```
+
+从研究任务匹配案例：
+
+```bash
+curl -s "$ARCHLENS_ENDPOINT" \
+  -H 'content-type: application/json' \
+  --data '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"match_cases_to_brief","arguments":{"brief":"公共空间与自然通风","limit":4}}}'
+```
+
+读取内置工作流资源：
+
+```bash
+curl -s "$ARCHLENS_ENDPOINT" \
+  -H 'content-type: application/json' \
+  --data '{"jsonrpc":"2.0","id":4,"method":"resources/read","params":{"uri":"archlens://workflows"}}'
 ```
 
 仓库还提供一个零依赖的协议级 smoke client，可在部署后验证远程 MCP：
@@ -92,6 +108,19 @@ npm run case:pack -- --input ./case.json --out ./research-packs/my-case --source
 - `extract_design_elements`
 - `compare_cases`
 - `build_research_pack`
+- `list_case_facets`：列出当前数据集支持的类型、地域、标签、元素和建筑师，不需要客户端猜枚举。
+- `match_cases_to_brief`：使用公开的固定字段权重排序，返回 `score` 和 `matchedSignals`；它不是模型推理或专业推荐。
+- `build_case_collection`：为 2–6 个案例汇总比较字段、共同元素、研究问题、风险、图像许可和来源清单。
+
+所有工具都标记为只读、幂等、无开放世界副作用。现有 5 个工具的名称和入参保持不变。
+
+## Resources
+
+- `archlens://dataset`：数据集版本、案例数量和来源边界。
+- `archlens://cases`：可直接读取的案例索引与来源。
+- `archlens://workflows`：内置只读研究工作流模板。
+
+服务会在 `initialize` 中声明 `resources` capability。未知 URI 使用标准 JSON-RPC `-32002` 错误，不会回退到外部 URL 抓取。
 
 来源证据登记不作为 MCP 工具自动写入；贡献者先用 CLI 生成并复核报告，再按 [`docs/SOURCE_INTAKE.md`](../docs/SOURCE_INTAKE.md) 选择性登记到 D1。这样 MCP 仍然只读取稳定的案例资料，避免把外部网页抓取或写入副作用隐藏在 Agent 调用里。
 

@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const schemaVersion = "1.0.0";
-const allowedTools = new Set(["search_cases", "get_case", "extract_design_elements", "compare_cases", "build_research_pack"]);
+const allowedTools = new Set(["search_cases", "get_case", "extract_design_elements", "compare_cases", "build_research_pack", "list_case_facets", "match_cases_to_brief", "build_case_collection"]);
 const outputFormats = new Set(["markdown", "json"]);
 
 function isRecord(value) {

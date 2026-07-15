@@ -18,6 +18,7 @@ const template = {
 
 test("workflow manifest accepts a valid read-only MCP workflow", () => {
   assert.equal(validateWorkflow(template).id, "test-workflow");
+  assert.equal(validateWorkflow({ ...template, steps: [{ ...template.steps[0], tool: "match_cases_to_brief", args: { brief: "{{brief}}" } }] }).id, "test-workflow");
 });
 
 test("workflow manifest rejects unknown tools and missing citations", () => {

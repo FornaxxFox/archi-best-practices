@@ -38,6 +38,8 @@ test("server-renders the MCP page", async () => {
   assert.match(html, /MODEL CONTEXT PROTOCOL/);
   assert.match(html, /真实调用/);
   assert.match(html, /search_cases/);
+  assert.match(html, /匹配研究任务/);
+  assert.match(html, /TOOLS \/.*08/s);
 });
 
 test("server-renders portable workspace controls", async () => {
@@ -66,15 +68,42 @@ test("MCP endpoint returns tool definitions and case data", async () => {
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.name, "archlens");
-  assert.equal(body.version, "0.2.0");
-  assert.equal(body.schemaVersion, "1.0.0");
+  assert.equal(body.version, "0.3.0");
+  assert.equal(body.schemaVersion, "1.1.0");
   assert.equal(body.auth, "none");
   assert.equal(body.rateLimitPerMinute, 60);
   assert.equal(body.dataset.caseCount, 18);
   assert.equal(body.dataset.version, "2026-07-15.2");
+  assert.equal(body.tools.length, 8);
+  assert.deepEqual(body.resources, ["archlens://dataset", "archlens://cases", "archlens://workflows"]);
   assert.match(body.endpoint, /\/api\/mcp/);
   assert.match(response.headers.get("x-request-id") ?? "", /.+/);
-  assert.equal(response.headers.get("mcp-schema-version"), "1.0.0");
+  assert.equal(response.headers.get("mcp-schema-version"), "1.1.0");
+});
+
+test("MCP advertises and serves readable resources", async () => {
+  const call = (method, params = {}) => render("/api/mcp", {
+    method: "POST",
+    headers: { accept: "application/json", "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+  });
+  const initialize = await (await call("initialize", {})).json();
+  assert.deepEqual(initialize.result.capabilities.resources, {});
+  const tools = await (await call("tools/list", {})).json();
+  assert.deepEqual(tools.result.tools.map((tool) => tool.name), ["search_cases", "get_case", "extract_design_elements", "compare_cases", "build_research_pack", "list_case_facets", "match_cases_to_brief", "build_case_collection"]);
+  assert.ok(tools.result.tools.every((tool) => tool.annotations.readOnlyHint === true && tool.annotations.destructiveHint === false && tool.annotations.idempotentHint === true && tool.annotations.openWorldHint === false));
+  const listed = await (await call("resources/list", {})).json();
+  assert.deepEqual(listed.result.resources.map((resource) => resource.uri), ["archlens://dataset", "archlens://cases", "archlens://workflows"]);
+  const casesResource = await (await call("resources/read", { uri: "archlens://cases" })).json();
+  const casePayload = JSON.parse(casesResource.result.contents[0].text);
+  assert.equal(casePayload.dataset.caseCount, 18);
+  assert.equal(casePayload.cases.length, 18);
+  const workflowResource = await (await call("resources/read", { uri: "archlens://workflows" })).json();
+  const workflowPayload = JSON.parse(workflowResource.result.contents[0].text);
+  assert.ok(workflowPayload.workflows.some((workflow) => workflow.id === "match-brief-to-cases"));
+  const missing = await call("resources/read", { uri: "archlens://missing" });
+  assert.equal(missing.status, 404);
+  assert.equal((await missing.json()).error.code, -32002);
 });
 
 test("health endpoint exposes dataset and protocol readiness", async () => {
@@ -192,6 +221,26 @@ test("MCP case tools expose the same research-pack fields", async () => {
   const semanticSearchBody = await semanticSearchResponse.json();
   assert.ok(semanticSearchBody.result.structuredContent.length > 0);
 
+  const facetsResponse = await call("list_case_facets", {});
+  const facets = (await facetsResponse.json()).result.structuredContent;
+  assert.equal(facets.dataset.caseCount, 18);
+  assert.equal(facets.facets.projectTypes.reduce((sum, facet) => sum + facet.count, 0), 18);
+  assert.ok(facets.facets.projectTypes.some((facet) => facet.value === "景观"));
+  assert.ok(facets.facets.tags.length > 0);
+
+  const matchResponse = await call("match_cases_to_brief", { brief: "连续曲面 公共地景", limit: 3 });
+  const matches = (await matchResponse.json()).result.structuredContent;
+  assert.equal(matches.scoring, "fixed-field-weights-v1");
+  assert.equal(matches.results[0].id, "heydar-aliyev-centre");
+  assert.ok(matches.results[0].matchedSignals.some((signal) => signal.term === "公共地景"));
+
+  const collectionResponse = await call("build_case_collection", { case_ids: ["heydar-aliyev-centre", "superkilen"] });
+  const collection = (await collectionResponse.json()).result.structuredContent;
+  assert.equal(collection.caseCount, 2);
+  assert.equal(collection.comparison.length, 2);
+  assert.ok(collection.sources.length >= 2);
+  assert.ok(collection.boundary.includes("原始来源"));
+
   for (const result of results) {
     const caseResponse = await call("get_case", { case_id: result.id });
     const caseBody = await caseResponse.json();
@@ -239,4 +288,14 @@ test("MCP returns stable JSON-RPC errors and tool errors", async () => {
   assert.equal(invalidToolBody.result.isError, true);
   assert.equal(invalidToolBody.result.structuredContent.error.code, "INVALID_PARAMS");
   assert.match(invalidToolArgs.headers.get("x-response-time-ms") ?? "", /^\d+$/);
+
+  const invalidBrief = await post(JSON.stringify({ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "match_cases_to_brief", arguments: { brief: " ", limit: 20 } } }));
+  const invalidBriefBody = await invalidBrief.json();
+  assert.equal(invalidBriefBody.result.isError, true);
+  assert.equal(invalidBriefBody.result.structuredContent.error.code, "INVALID_PARAMS");
+
+  const duplicateCollection = await post(JSON.stringify({ jsonrpc: "2.0", id: 7, method: "tools/call", params: { name: "build_case_collection", arguments: { case_ids: ["superkilen", "superkilen"] } } }));
+  const duplicateCollectionBody = await duplicateCollection.json();
+  assert.equal(duplicateCollectionBody.result.isError, true);
+  assert.equal(duplicateCollectionBody.result.structuredContent.error.code, "INVALID_PARAMS");
 });
