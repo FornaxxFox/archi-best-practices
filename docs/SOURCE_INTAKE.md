@@ -113,7 +113,7 @@ npm run source:proposal -- \
 
 ## GitHub 可复用来源工作流
 
-仓库提供 `.github/workflows/source-intake.yml`。在 GitHub Actions 中手动触发后，它会：
+仓库提供 `.github/workflows/source-intake.yml`。它支持 GitHub Actions 手动触发，也会在每周一自动检查 `research-packs/source-input`；没有该目录时定时运行会安全跳过。触发后它会：
 
 1. 按稳定顺序运行 `source:pipeline`，保存每个案例的 `source-report.json` 和 `source-notes.md`。
 2. 无论抓取是否有失败，都生成 `dataset-change-proposal.json` 和 Markdown 审阅包；失败会保持 `blocked`，并上传证据供复核。
