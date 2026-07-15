@@ -2,6 +2,13 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Dataset audit release 19
+
+- Git commit：`80e721c03621bb93e96eaed9b1ed4d037620a7f4`
+- Sites：版本 19，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：`dataset:audit`、逐案例稳定内容哈希和 `docs/datasets/2026-07-15.1.json` 基线；案例内容变化但版本未递增时 CI 失败。
+- 验证：本地 18/18 测试、数据集审核、构建和 GitHub CI 均通过；线上健康检查和 MCP smoke 保持通过。
+
 ## 2026-07-15 · Source intake release 17
 
 - Git commit：`0c7df7446cc0de195e7df022601e0e500964f5e6`
@@ -28,8 +35,8 @@
 
 ## 当前限制
 
-- Dataset 仍是仓库内的精选种子数据，版本号需要随内容提交显式更新。
-- MCP 仍是无鉴权 Demo；持久化限流、审计存储和团队权限属于生产化阶段。
+- Dataset 仍是仓库内的精选种子数据；版本变更现在由逐案例基线审核门禁约束。
+- MCP 公开 Demo 默认无鉴权；持久化限流、审计存储和团队权限属于生产化阶段。
 
 ## 2026-07-15 · Optional runtime security capability
 
