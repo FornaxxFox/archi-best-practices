@@ -47,6 +47,8 @@ test("server-renders portable workspace controls", async () => {
   assert.match(html, /PORTABLE WORKSPACE/);
   assert.match(html, /导出工作区 JSON/);
   assert.match(html, /导入工作区 JSON/);
+  assert.match(html, /case-submission\.yml/);
+  assert.match(html, /提交完整案例资料/);
 });
 
 test("server-renders the project narrative page", async () => {
