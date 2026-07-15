@@ -1,0 +1,61 @@
+{
+  "name": "xiaohongshu-studio",
+  "displayName": "小红书图文工厂",
+  "version": "1.4.1",
+  "description": "A self-media editorial toolkit for producing Xiaohongshu (RedNote) style poster carousels from articles, links, or books. v1.3 series adds IP-grade operations: series planning, multi-platform adaptation, persona library, and full contract-freeze back-compat.",
+  "descriptionZh": "自媒体图文生产套件 v1.4.1：v1.3 阶段 IP 运营能力 + 完整 M27 迁移工具链 + 6th self-review 收口。v1.4.1 修 4 P1 (config:null 防御 / 路径存在性 / schema skipped 兼容 / forbidden word-boundary) + 3 P2 (validator scope / CHANGELOG 校准 / relation enum 删 stray `-`)。完全向后兼容 v1.2 / v1.3.x。",
+  "author": {
+    "name": "FornaxxFox",
+    "email": "15567055305@163.com",
+    "url": "https://github.com/FornaxxFox"
+  },
+  "category": "marketing",
+  "subcategory": "content-creation",
+  "tags": ["xiaohongshu", "rednote", "content", "self-media", "poster", "copywriting", "editorial", "ab-test", "data-driven", "series", "ip-ops", "multi-platform", "persona", "contract-fix", "m27-migration", "schema-validated"],
+  "keywords": ["小红书", "rednote", "图文", "拆书", "系列化", "多平台分发", "persona", "小红书文案", "小红书海报"],
+  "license": "MIT",
+  "homepage": "https://github.com/FornaxxFox/mega-media-sop",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FornaxxFox/mega-media-sop.git"
+  },
+  "engines": {
+    "min_qoderwork_version": "1.0.0",
+    "min_python_version": "3.9"
+  },
+  "permissions": [],
+  "skill_dependencies": {
+    "文案撰写": {"required": ["选题策划"], "optional": ["人设语料库"]},
+    "海报生成": {"required": ["选题策划", "小红书设计风格库"], "optional": ["封面插图", "人设语料库"]},
+    "封面插图": {"required": [], "optional": ["人设语料库"]},
+    "责任编辑审校": {"required": ["文案撰写"], "optional": []},
+    "主编审阅": {"required": ["文案撰写", "海报生成"], "optional": []},
+    "观众视角": {"required": ["海报生成"], "optional": []},
+    "发布物打包": {"required": ["文案撰写", "海报生成", "责任编辑审校", "主编审阅", "观众视角"], "optional": ["多平台适配"]},
+    "发布复盘": {"required": ["发布物打包"], "optional": ["人设语料库"]},
+    "多平台适配": {"required": ["发布物打包"], "optional": []},
+    "系列化规划": {"required": [], "optional": ["选题策划", "人设语料库"]},
+    "编辑部编排": {"required": ["原文摄入", "选题策划", "文案撰写", "海报生成", "封面插图", "责任编辑审校", "主编审阅", "观众视角", "发布物打包"], "optional": ["发布复盘", "多平台适配", "系列化规划", "人设语料库"]},
+    "原文摄入": {"required": [], "optional": []},
+    "选题策划": {"required": ["原文摄入"], "optional": []},
+    "人设语料库": {"required": [], "optional": []},
+    "小红书设计风格库": {"required": [], "optional": []}
+  },
+  "skills": [
+    "skills/编辑部编排",
+    "skills/原文摄入",
+    "skills/选题策划",
+    "skills/文案撰写",
+    "skills/海报生成",
+    "skills/封面插图",
+    "skills/责任编辑审校",
+    "skills/主编审阅",
+    "skills/观众视角",
+    "skills/发布复盘",
+    "skills/发布物打包",
+    "skills/小红书设计风格库",
+    "skills/系列化规划",
+    "skills/多平台适配",
+    "skills/人设语料库"
+  ]
+}

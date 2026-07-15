@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.3.3",
+  "description": "v1.3.3 起为 6 平台错峰时间表的 canonical 来源。cross-post-schedule.md / 发布物打包/SKILL.md / scheduling-patterns.md 三处都引用本文件而非自维护。",
+  "updated_at": "2026-07-14T18:00:00+08:00",
+  "platforms": {
+    "xiaohongshu": {
+      "display_name": "小红书",
+      "time": "周二 19:30",
+      "offset_hours_from_xiaohongshu": 0,
+      "image_aspect": "3:4 (1080x1440)",
+      "tag_count": "8-12",
+      "primary": true
+    },
+    "douyin_text": {
+      "display_name": "抖音图文",
+      "time": "周三 19:30",
+      "offset_hours_from_xiaohongshu": 24,
+      "image_aspect": "9:16 (1080x1920)",
+      "tag_count": "5-8",
+      "primary": false
+    },
+    "wechat_oa": {
+      "display_name": "公众号",
+      "time": "周四 19:30",
+      "offset_hours_from_xiaohongshu": 48,
+      "image_aspect": "1:1 (900x900)",
+      "tag_count": "0-2",
+      "primary": false
+    },
+    "zhihu": {
+      "display_name": "知乎",
+      "time": "周五 19:30",
+      "offset_hours_from_xiaohongshu": 72,
+      "image_aspect": "1:1 (800x800)",
+      "tag_count": "3-5",
+      "primary": false
+    },
+    "jike": {
+      "display_name": "即刻",
+      "time": "周二 19:30",
+      "offset_hours_from_xiaohongshu": 0,
+      "image_aspect": "1:1",
+      "tag_count": "1-2",
+      "primary": false
+    },
+    "twitter": {
+      "display_name": "Twitter",
+      "time": "周二 19:30",
+      "offset_hours_from_xiaohongshu": 0,
+      "image_aspect": "16:9",
+      "tag_count": "1-2",
+      "primary": false
+    }
+  },
+  "golden_slots": {
+    "拆书/干货": ["周二 19:30", "周四 19:30", "周日 20:00"],
+    "种草/测评": ["周二 12:00", "周五 17:00"],
+    "情绪/故事": ["周日 20:00"]
+  },
+  "avoid_slots": ["周六上午", "23:00 后", "节假日全天"],
+  "series_cadence": {
+    "weekly_tue": "每期 周二 19:30",
+    "weekly_sun": "每期 周日 20:00",
+    "biweekly_tue_thu": "周二 + 周四 19:30（需要 2 倍产能）",
+    "daily": "每日 19:30（仅故事线/挑战体）",
+    "alt_day": "隔日 19:30（30 天挑战体）"
+  }
+}

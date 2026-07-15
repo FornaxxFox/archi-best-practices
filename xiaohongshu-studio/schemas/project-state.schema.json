@@ -1,0 +1,260 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/qoderwork/xiaohongshu-studio/schemas/project-state.schema.json",
+  "title": "project-state.json",
+  "description": "小红书图文工厂 v1.3.4 — 每个项目目录下的状态文件 schema。所有字段 optional，缺失 = 用 default。",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["project_id"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^1\\.[234]\\.",
+      "description": "schema 版本号；旧值（如 1.2.0）不强制升级，由 back-compat 规则处理"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "项目 ID，kebab-case 或中文短标识；**不**带 -volN 后缀（Vol 标识在 series_context.episode）"
+    },
+    "project_dir": {
+      "type": "string",
+      "description": "项目目录相对路径"
+    },
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "source_material": {"type": "string"},
+    "user_intent": {"type": "string"},
+
+    "config": {
+      "description": "v1.4.1 P1-3 修复：config 可以 null（v1.3.x 现场常见）",
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "target_length": {"type": "integer", "default": 9},
+            "style_hint": {"type": "string", "enum": ["auto", "暖调知识风", "清新种草风", "深色hook风", "文艺情绪风"]},
+            "max_iterations_per_stage": {"type": "integer", "default": 2},
+            "cover_image_enabled": {"type": "boolean", "default": true},
+            "ab_test_enabled": {"type": "boolean", "default": false},
+            "series": {
+              "oneOf": [
+                {"type": "null"},
+                {"$ref": "#/definitions/seriesMirror"}
+              ]
+            },
+            "multi_platform": {"type": "boolean", "default": false},
+            "persona_ref": {
+              "type": "string",
+              "description": "相对路径 → workspace 根；绝对路径 → 直接用；缺省 → references/persona-profile.json"
+            }
+          }
+        }
+      ]
+    },
+
+    "stages": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "原文摄入":     {"$ref": "#/definitions/stage"},
+        "选题策划":     {"$ref": "#/definitions/stage"},
+        "文案撰写":     {"$ref": "#/definitions/stage", "properties": {"iterations": {"oneOf": [{"type": "integer"}, {"$ref": "#/definitions/iterationsObject"}]}}},
+        "海报生成":     {"$ref": "#/definitions/stage"},
+        "封面插图":     {"$ref": "#/definitions/stageCover"},
+        "责任编辑审校":  {"$ref": "#/definitions/stage"},
+        "主编审阅":     {"$ref": "#/definitions/stage"},
+        "观众视角":     {"$ref": "#/definitions/stage"},
+        "发布物打包":   {"$ref": "#/definitions/stage"},
+        "发布复盘":     {"$ref": "#/definitions/stage"},
+        "多平台适配":   {"$ref": "#/definitions/stageMultiPlatform"}
+      }
+    },
+
+    "quality_bar": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "editor_min_score": {"type": "number", "default": 3.5, "description": "条件通过下限（v1.3.2 起）"},
+        "editor_pass_score": {"type": "number", "default": 4.2, "description": "自动通过线"},
+        "audience_min_stop_rate": {"type": "number", "default": 0.40},
+        "audience_ab_test_floor": {"type": "number", "default": 0.45},
+        "audience_no_test_floor": {"type": "number", "default": 0.50},
+        "audience_min_completion_rate": {"type": "number", "default": 0.60},
+        "persona_min_score": {"type": "number", "default": 3.5}
+      }
+    },
+
+    "series_context": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/definitions/seriesContext"}
+      ]
+    },
+
+    "rework_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["at", "triggered_by", "rework_stage"],
+        "properties": {
+          "at": {"type": "string", "format": "date-time"},
+          "triggered_by": {"type": "string"},
+          "rework_stage": {
+            "type": "string",
+            "enum": ["原文摄入", "选题策划", "文案撰写", "海报生成", "封面插图", "多平台适配"]
+          },
+          "reason": {"type": "string"},
+          "instruction": {"type": "string"}
+        }
+      }
+    }
+  },
+
+  "definitions": {
+    "seriesMirror": {
+      "type": "object",
+      "description": "v1.3 镜像字段（v1.3.4 仍保留，与 series_context 双写）",
+      "required": ["id", "episode"],
+      "properties": {
+        "id": {"type": "string"},
+        "episode": {"type": "integer", "minimum": 1},
+        "total_planned": {"type": "integer", "minimum": 1},
+        "cadence": {"type": "string", "enum": ["weekly_tue", "weekly_sun", "biweekly_tue_thu", "daily", "alt_day"]},
+        "theme_one_liner": {"type": "string"}
+      }
+    },
+    "seriesContext": {
+      "type": "object",
+      "description": "v1.3.2+ canonical 系列上下文",
+      "required": ["id", "episode"],
+      "properties": {
+        "id": {"type": "string"},
+        "episode": {"type": "integer", "minimum": 1},
+        "total_planned": {"type": "integer", "minimum": 1},
+        "cadence": {"type": "string"},
+        "theme_one_liner": {"type": "string"},
+        "bible_path": {"type": "string"},
+        "previous_episodes": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {"type": "string", "description": "v1.3.0/v1.3.1 字符串路径形式（运行时 normalize）"},
+              {
+                "type": "object",
+                "required": ["project_id", "episode"],
+                "properties": {
+                  "project_id": {"type": "string"},
+                  "episode": {"type": "integer", "minimum": 1}
+                }
+              }
+            ]
+          }
+        },
+        "cross_episode": {
+          "type": "object",
+          "properties": {
+            "inherit_phrase_seed": {"type": ["string", "null"]},
+            "teaser_phrase_seed": {"type": ["string", "null"]},
+            "inherit_phrase": {"type": ["string", "null"], "description": "v1.3.3 canonical，跨期承接句"},
+            "teaser_phrase": {"type": ["string", "null"], "description": "v1.3.3 canonical，跨期预告句"},
+            "inherit_phrase_seed_source": {"type": "string", "description": "v1.3.3 审计用，标记 seed 来源"},
+            "relation_to_previous": {"type": "string", "enum": ["递进", "并列", "反差", "引申"], "description": "v1.4.1 P2-3 修复：删 stray `-` 占位符，4 值 enum"}
+          }
+        }
+      }
+    },
+    "stage": {
+      "type": "object",
+      "description": "v1.4 P1-3: 兼容旧 skipped（必填 notes），运行时 back-compat 视 skipped 为 done + notes",
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "status": {"type": "string", "enum": ["pending", "in_progress", "done", "blocked"]},
+            "output": {"type": "string"},
+            "iterations": {"oneOf": [{"type": "integer"}, {"type": "object"}]},
+            "started_at": {"type": "string", "format": "date-time"},
+            "completed_at": {"type": "string", "format": "date-time"},
+            "notes": {"type": "string"}
+          }
+        },
+        {
+          "type": "object",
+          "required": ["notes"],
+          "properties": {
+            "status": {"const": "skipped"},
+            "output": {"type": "string"},
+            "iterations": {"oneOf": [{"type": "integer"}, {"type": "object"}]},
+            "started_at": {"type": "string", "format": "date-time"},
+            "completed_at": {"type": "string", "format": "date-time"},
+            "notes": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "stageCover": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "status": {"type": "string", "enum": ["pending", "in_progress", "done", "blocked"]},
+            "output": {"type": "string"},
+            "placement": {"type": "string", "enum": ["background", "top_half", "center_float"]},
+            "prompt_used": {"type": "string"},
+            "iterations": {"type": "integer"},
+            "ab_outputs": {
+              "oneOf": [
+                {"type": "null"},
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["variant", "output_path"],
+                    "properties": {
+                      "variant": {"type": "string", "enum": ["A", "B"]},
+                      "output_path": {"type": "string"},
+                      "generated_at": {"type": "string", "format": "date-time"}
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {"type": "object", "required": ["notes"], "properties": {"status": {"const": "skipped"}, "notes": {"type": "string", "minLength": 1}}}
+      ]
+    },
+    "stageMultiPlatform": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "status": {"type": "string", "enum": ["pending", "in_progress", "done", "blocked"]},
+            "output": {"type": "string"},
+            "platforms": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["xiaohongshu", "douyin_text", "wechat_oa", "zhihu", "jike", "twitter"]
+              }
+            },
+            "iterations": {"type": "integer"}
+          }
+        },
+        {"type": "object", "required": ["notes"], "properties": {"status": {"const": "skipped"}, "notes": {"type": "string", "minLength": 1}}}
+      ]
+    },
+    "iterationsObject": {
+      "type": "object",
+      "description": "v1.3.3+ 三段计数：主回炉 / persona 回炉 / seed 触发的回炉",
+      "properties": {
+        "main": {"type": "integer", "minimum": 0, "default": 0},
+        "persona": {"type": "integer", "minimum": 0, "default": 0},
+        "seeded": {"type": "integer", "minimum": 0, "default": 0}
+      }
+    }
+  }
+}
