@@ -2,6 +2,14 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Workspace member roles release 45
+
+- Git commit：`172d72dd46ccb10e2c248f1870f000a39f75620a`
+- Sites：版本 45，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：`workspace_members` 成员表、`editor/viewer` 成员 token、按空间访问控制、成员撤销和 `workspace_audit_events` 审计事件。
+- 安全边界：operator token 只用于空间和成员管理；成员 token 只返回一次，服务端只保存 SHA-256 hash；公开 Demo 仍默认返回 404，不开放共享工作区。
+- 验证：本地构建、dataset audit、35 个 JavaScript 测试和 9 个 TypeScript 测试通过；lint 无错误；GitHub CI、生产 health、MCP smoke 和公开关闭行为通过。
+
 ## 2026-07-15 · Opt-in shared workspace release 43
 
 - Git commit：`9298bc00494ad0911bbafab69bef31825f432212`
@@ -122,7 +130,7 @@
 ## 当前限制
 
 - Dataset 仍是仓库内的精选种子数据；版本变更现在由逐案例基线审核门禁约束。
-- MCP 公开 Demo 默认无鉴权；持久化限流、审计存储和团队权限属于生产化阶段。
+- MCP 公开 Demo 默认无鉴权；成员角色和审计存储已进入可选 D1 能力，token 过期、邀请链接、更细粒度配额和自动入库仍属于后续生产化阶段。
 
 ## 2026-07-15 · Optional runtime security capability
 
