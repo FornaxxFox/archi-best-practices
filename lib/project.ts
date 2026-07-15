@@ -55,6 +55,7 @@ export const codeMap = [
   { path: "lib/mcp.ts", label: "MCP 领域层", body: "工具定义、案例检索、结构化提取、比较和资料包生成。" },
   { path: "app/api/mcp/route.ts", label: "MCP HTTP 接口", body: "无鉴权 Demo Endpoint，承接 initialize、tools/list 和 tools/call。" },
   { path: "scripts/source-intake.mjs", label: "来源 intake", body: "按 HTTPS、超时和字节上限读取公开页面元数据与短摘录，不下载图片或生成事实。" },
+  { path: ".github/workflows/source-intake.yml", label: "来源同步工作流", body: "手动触发顺序抓取、证据登记和人工发布候选，失败证据上传但不会自动修改数据集。" },
   { path: "skills/case-production/SKILL.md", label: "案例生产 Skill", body: "规定采集、结构化、引用核验和发布的复用流程。" },
   { path: "workflows/templates/", label: "研究工作流", body: "提供设计思路、元素颜色和案例比较的短 Prompt 与只读 MCP 编排模板。" },
   { path: "docs/", label: "项目文档", body: "理念、架构、Milestones 和开源协作约定。" },

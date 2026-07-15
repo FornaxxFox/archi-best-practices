@@ -111,6 +111,16 @@ npm run source:proposal -- \
 
 脚本会输出 `dataset-change-proposal.json` 和 Markdown 审阅包。所有来源无失败时状态为 `ready_for_manual_review`；任一来源失败、报告非法或案例重复时状态为 `blocked` 并以非零退出。候选文件明确声明 `autoPublish: false`、`datasetMutation: false` 和 `requiresPullRequest: true`，不会修改 `lib/data.ts`。
 
+## GitHub 可复用来源工作流
+
+仓库提供 `.github/workflows/source-intake.yml`。在 GitHub Actions 中手动触发后，它会：
+
+1. 按稳定顺序运行 `source:pipeline`，保存每个案例的 `source-report.json` 和 `source-notes.md`。
+2. 无论抓取是否有失败，都生成 `dataset-change-proposal.json` 和 Markdown 审阅包；失败会保持 `blocked`，并上传证据供复核。
+3. 只有明确把 `ingest` 设为 `true` 且提供 `ARCHLENS_SOURCE_INTAKE_TOKEN` secret 时，才会把成功报告登记到 D1。
+
+这个 workflow 不修改 `lib/data.ts`、不自动创建 PR，也不自动发布数据集；数据集变更仍需人工确认、PR、`dataset:audit` 和可回滚的发布记录。
+
 ## 可选共享工作区
 
 浏览器工作区默认只存在本地，也可以通过 JSON 快照交接。如果需要一个 D1 中的共享空间，必须同时配置独立 token 和写入开关：

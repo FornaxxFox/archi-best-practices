@@ -1,0 +1,87 @@
+name: ArchLens Source Intake
+
+on:
+  workflow_dispatch:
+    inputs:
+      input_dir:
+        description: "包含 case.json 的案例目录"
+        required: true
+        default: "research-packs/source-input"
+        type: string
+      endpoint:
+        description: "可选的 D1 source-intake endpoint"
+        required: false
+        default: "https://archlens.yiking233.chatgpt.site/api/source-intake"
+        type: string
+      ingest:
+        description: "是否把成功报告登记到 D1；不会修改案例数据集"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  source-intake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run source pipeline
+        id: pipeline
+        continue-on-error: true
+        run: npm run source:pipeline -- --input "${{ inputs.input_dir }}" --out "$RUNNER_TEMP/source-intake" --delay 250
+
+      - name: Generate manual-review proposal
+        id: proposal
+        if: always()
+        continue-on-error: true
+        run: npm run source:proposal -- --input "$RUNNER_TEMP/source-intake" --out "$RUNNER_TEMP/release-candidate"
+
+      - name: Ingest successful evidence reports
+        if: inputs.ingest && steps.pipeline.outcome == 'success'
+        env:
+          ARCHLENS_SOURCE_INTAKE_TOKEN: ${{ secrets.ARCHLENS_SOURCE_INTAKE_TOKEN }}
+        run: |
+          if [ -z "$ARCHLENS_SOURCE_INTAKE_TOKEN" ]; then
+            echo "ARCHLENS_SOURCE_INTAKE_TOKEN is required when ingest=true"
+            exit 1
+          fi
+          npm run source:ingest -- \
+            --input "$RUNNER_TEMP/source-intake" \
+            --endpoint "${{ inputs.endpoint }}" \
+            --token "$ARCHLENS_SOURCE_INTAKE_TOKEN" \
+            --delay 100
+
+      - name: Upload source evidence and proposal
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: archlens-source-intake-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/source-intake
+            ${{ runner.temp }}/release-candidate
+          if-no-files-found: error
+
+      - name: Enforce pipeline and proposal gates
+        if: always()
+        run: |
+          if [ "${{ steps.pipeline.outcome }}" != "success" ]; then
+            echo "source pipeline failed; inspect the uploaded evidence"
+            exit 1
+          fi
+          if [ "${{ steps.proposal.outcome }}" != "success" ]; then
+            echo "manual-review proposal is blocked; inspect the uploaded proposal"
+            exit 1
+          fi

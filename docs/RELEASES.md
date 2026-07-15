@@ -2,6 +2,14 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Workspace quota release 49
+
+- Git commit：`27210f5c3ac874be36a7e4fcc9b80017b69d58d9`
+- Sites：版本 49，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：D1 `workspace_rate_limit_buckets`，按空间身份限制共享工作区和成员管理请求；默认每分钟 120 次，超限返回 429，缺 migration 返回 503。
+- 边界：公开 Demo 默认关闭 workspace；MCP 的既有限流与 workspace quota 分开计数。
+- 验证：本地构建、dataset audit、35 个 JavaScript 测试和 10 个 TypeScript 测试通过；lint 无错误；生产部署成功。
+
 ## 2026-07-15 · Workspace token expiry release 47
 
 - Git commit：`6d4cb4fa7024c75a5a9a061b9717970b3771b354`
