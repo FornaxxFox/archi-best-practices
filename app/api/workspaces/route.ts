@@ -3,6 +3,7 @@ import { getDb } from "@/db";
 import { workspaceAuditEvents, workspaceMembers, workspaceSpaces } from "@/db/schema";
 import { canWriteWorkspace, hashWorkspaceToken, type WorkspaceRole } from "@/lib/workspace-auth";
 import { parseWorkspaceSnapshot, validateWorkspaceSnapshot, type WorkspaceSnapshot } from "@/lib/workspace";
+import { consumeWorkspaceQuota, type WorkspaceQuotaResult } from "@/lib/workspace-rate-limit";
 import { getMcpRuntimeConfig, hasValidWorkspaceAuthorization } from "@/lib/runtime-config";
 
 const jsonHeaders = { "Cache-Control": "no-store" };
@@ -11,8 +12,12 @@ type WorkspaceAccess = { role: WorkspaceRole; actor: string; memberId: string | 
 
 function databaseError(error: unknown) {
   const message = error instanceof Error ? error.message : "数据库操作失败";
-  if (message.includes("no such table") || message.includes("workspace_spaces")) return "共享工作区数据表不可用，请先应用 drizzle migration";
+  if (message.includes("no such table") || message.includes("workspace_spaces") || message.includes("workspace_rate_limit_buckets")) return "共享工作区数据表不可用，请先应用 drizzle migration";
   return message;
+}
+
+function quotaResponse(quota: WorkspaceQuotaResult) {
+  return Response.json({ error: "共享工作区请求过于频繁，请稍后重试", retryAfterSeconds: Math.max(1, Math.ceil((quota.resetAt - Date.now()) / 1000)) }, { status: 429, headers: { ...jsonHeaders, "Retry-After": String(Math.max(1, Math.ceil((quota.resetAt - Date.now()) / 1000))), "X-RateLimit-Limit": String(quota.limit), "X-RateLimit-Remaining": String(quota.remaining), "X-RateLimit-Reset": String(Math.ceil(quota.resetAt / 1000)) } });
 }
 
 function enabled(config: ReturnType<typeof getMcpRuntimeConfig>) {
@@ -97,10 +102,14 @@ export async function GET(request: Request) {
       const spaceId = parseId(id);
       const access = await resolveAccess(db, request, spaceId, config);
       if (!access) return Response.json({ error: "没有访问该共享工作区的权限" }, { status: 403, headers: jsonHeaders });
+      const quota = await consumeWorkspaceQuota(db, `space:${spaceId}:${access.actor}`, config.workspaceRateLimitPerMinute);
+      if (!quota.allowed) return quotaResponse(quota);
       const rows = await db.select().from(workspaceSpaces).where(eq(workspaceSpaces.id, spaceId)).limit(1);
       if (!rows[0]) return Response.json({ error: "找不到共享工作区" }, { status: 404, headers: jsonHeaders });
       return Response.json({ space: publicSpace(rows[0], parseWorkspaceSnapshot(rows[0].snapshotJson), access.role) }, { headers: jsonHeaders });
     }
+    const quota = await consumeWorkspaceQuota(db, "spaces:operator", config.workspaceRateLimitPerMinute);
+    if (!quota.allowed) return quotaResponse(quota);
     const rows = await db.select().from(workspaceSpaces).orderBy(desc(workspaceSpaces.updatedAt)).limit(50);
     return Response.json({ spaces: rows.map((row) => ({ id: row.id, name: row.name, ownerLabel: row.ownerLabel, schemaVersion: row.schemaVersion, datasetVersion: row.datasetVersion, role: "owner", createdAt: row.createdAt, updatedAt: row.updatedAt })) }, { headers: jsonHeaders });
   } catch (error) {
@@ -119,6 +128,8 @@ export async function POST(request: Request) {
     const parsed = parseBody(body, config, true);
     if (!parsed.id) throw new Error("id 必须是非空字符串");
     const db = await getDb();
+    const quota = await consumeWorkspaceQuota(db, "spaces:operator", config.workspaceRateLimitPerMinute);
+    if (!quota.allowed) return quotaResponse(quota);
     const now = new Date().toISOString();
     await db.batch([
       db.insert(workspaceSpaces).values({ id: parsed.id, name: parsed.name, ownerLabel: parsed.ownerLabel, schemaVersion: parsed.snapshot.schemaVersion, datasetVersion: parsed.snapshot.datasetVersion, snapshotJson: JSON.stringify(parsed.snapshot), createdAt: now, updatedAt: now }),
@@ -152,6 +163,8 @@ export async function PUT(request: Request) {
     const access = await resolveAccess(db, request, spaceId, config);
     if (!access) return Response.json({ error: "没有访问该共享工作区的权限" }, { status: 403, headers: jsonHeaders });
     if (!canWriteWorkspace(access.role)) return Response.json({ error: "当前成员角色只能读取共享工作区" }, { status: 403, headers: jsonHeaders });
+    const quota = await consumeWorkspaceQuota(db, `space:${spaceId}:${access.actor}`, config.workspaceRateLimitPerMinute);
+    if (!quota.allowed) return quotaResponse(quota);
     const now = new Date().toISOString();
     await db.batch([
       db.update(workspaceSpaces).set({ name: parsed.name || existing[0].name, ownerLabel: parsed.ownerLabel || existing[0].ownerLabel, schemaVersion: parsed.snapshot.schemaVersion, datasetVersion: parsed.snapshot.datasetVersion, snapshotJson: JSON.stringify(parsed.snapshot), updatedAt: now }).where(eq(workspaceSpaces.id, spaceId)),

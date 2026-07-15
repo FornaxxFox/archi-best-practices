@@ -43,6 +43,13 @@
       "when": 1784116535218,
       "tag": "0005_right_forge",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1784117199733,
+      "tag": "0006_right_blob",
+      "breakpoints": true
     }
   ]
 }

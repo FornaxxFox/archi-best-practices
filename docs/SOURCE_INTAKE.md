@@ -151,3 +151,5 @@ curl -X DELETE "https://<your-domain>/api/workspaces/members?space_id=studio-res
 ```
 
 `viewer` 只能读取指定空间，`editor` 可以更新快照，operator/owner 才能创建空间、邀请和撤销成员。成员 token 只保存 SHA-256 hash，默认 30 天过期，可通过 `expiresInDays` 设置为 1–365 天；成员邀请和撤销会写入 `workspace_audit_events`。当前不支持邀请链接和多 operator。
+
+共享工作区接口还支持独立的 D1 配额。`ARCHLENS_WORKSPACE_RATE_LIMIT_PER_MINUTE` 默认是每个空间身份每分钟 120 次；超出时返回 429 和 `Retry-After`，配额表未完成 migration 时接口返回 503，不会退化为无限制写入。

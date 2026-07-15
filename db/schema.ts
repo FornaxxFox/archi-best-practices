@@ -34,6 +34,17 @@ export const mcpRateLimitBuckets = sqliteTable(
   (table) => [index("mcp_rate_limit_buckets_window_idx").on(table.windowStartedAt)],
 );
 
+export const workspaceRateLimitBuckets = sqliteTable(
+  "workspace_rate_limit_buckets",
+  {
+    bucketKey: text("bucket_key").primaryKey(),
+    windowStartedAt: integer("window_started_at").notNull(),
+    count: integer("count").notNull(),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [index("workspace_rate_limit_buckets_window_idx").on(table.windowStartedAt)],
+);
+
 export const sourceIntakeReviewEvents = sqliteTable(
   "source_intake_review_events",
   {

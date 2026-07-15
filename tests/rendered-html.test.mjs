@@ -90,6 +90,7 @@ test("health endpoint exposes dataset and protocol readiness", async () => {
   assert.equal(body.workspace.storage, "disabled");
   assert.equal(body.workspace.memberPermissions, "disabled");
   assert.equal(body.workspace.writeEnabled, false);
+  assert.equal(body.workspace.rateLimitPerMinute, 120);
 });
 
 test("shared workspace route stays closed by default", async () => {
