@@ -2,6 +2,13 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Source ingest empty-input guard release 33
+
+- Git commit：`d114bb1a0cb27a52a1855648393fe1426754cadf`
+- Sites：版本 33，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 修复：空目录或不含 `source-report.json` 的 ingest 现在显式失败，避免批处理误报成功。
+- 验证：本地 26 个 JavaScript 测试与 3 个 TypeScript contract 测试、构建、lint 和线上 MCP smoke 通过。
+
 ## 2026-07-15 · Source report ingest release 31
 
 - Git commit：`fe2ec6999997002702b848b90777f15a409daeff`
