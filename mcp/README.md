@@ -38,6 +38,14 @@ curl -s "$ARCHLENS_ENDPOINT" \
   --data '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"build_research_pack","arguments":{"case_id":"heydar-aliyev-centre"}}}'
 ```
 
+仓库还提供一个零依赖的协议级 smoke client，可在部署后验证远程 MCP：
+
+```bash
+ARCHLENS_MCP_ENDPOINT="https://<your-domain>/api/mcp" npm run mcp:smoke
+```
+
+如果站点仍是 Sites 私有访问，在同一条命令中临时提供 `OAI_SITES_AUTHORIZATION="Bearer ..."`；不要把这个值写入仓库、shell history 或 CI 配置。
+
 如果客户端支持远程 Streamable HTTP MCP，只需要新增一个服务器地址即可；配置文件通常类似：
 
 ```json
