@@ -2,6 +2,14 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Source review queue release 35
+
+- Git commit：`d8c2deee2a5dd1cfc8f01016e0915cbc041a671b`
+- Sites：版本 35，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：来源证据审核队列，支持 `recorded`、`needs_review`、`approved`、`rejected` 状态和可追溯审核事件；状态迁移通过 D1 batch 原子写入。
+- 边界：审核结果不会自动修改 `lib/data.ts`，案例发布仍需显式 PR、dataset audit 和回滚记录。
+- 验证：本地构建、dataset audit、26 个 JavaScript 测试和 4 个 TypeScript contract 测试通过；GitHub CI、线上 `/api/health`、审核队列 GET 和 MCP smoke 通过。
+
 ## 2026-07-15 · Source ingest empty-input guard release 33
 
 - Git commit：`d114bb1a0cb27a52a1855648393fe1426754cadf`
