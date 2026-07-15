@@ -40,6 +40,8 @@ npm run dev
 
 如果部署环境启用了 D1，可以把已经生成并人工复核的 `source-report.json` 登记到 `/api/source-intake`，保存案例 ID、来源数量、失败状态、时间线和完整报告；接口不会替代来源抓取，也不会自动生成事实。配置说明和请求示例见 [`docs/SOURCE_INTAKE.md`](docs/SOURCE_INTAKE.md)。
 
+审核前可以生成一个不会自动入库的发布候选：`npm run source:proposal -- --input ./research-packs/source-intake --out ./research-packs/release-candidate`。它会验证来源报告、阻断失败证据，并输出 JSON/Markdown 审阅包；通过后仍需人工修改案例数据、提交 PR 并运行 `npm run dataset:audit`。
+
 ## 项目文档
 
 - [项目理念、任务与预期](docs/PROJECT.md)

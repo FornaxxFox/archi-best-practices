@@ -20,6 +20,7 @@ scripts/
   source-intake.mjs      原始来源状态、元数据和有界摘录
   source-pipeline.mjs    目录级顺序处理、逐案例报告和总览门禁
   workflow-check.mjs     用户自有研究工作流 manifest 校验
+  source-proposal.mjs    来源证据到人工发布候选的显式门禁
   dataset-audit.mjs      逐案例稳定哈希、变更审核和基线检查
 lib/workspace.ts         可移交工作区快照 schema 与校验
 docs/datasets/            可审阅的数据集基线快照
@@ -57,6 +58,7 @@ docs/                    项目理念、架构、路线图和协作说明
 - UI 只负责浏览、筛选、保存、下载和展示，不把推理成本藏在产品里。
 - 用户工作流以仓库内 manifest 形式存在，调用只读 MCP；ArchLens 不保存模型调用、不绑定模型供应商。
 - 工作区快照包含数据集版本、收藏、评分和最近研究任务；导入只恢复当前浏览器状态，不向服务端写入数据。
+- 来源审核通过后只能生成发布候选，必须经过人工 PR 和 dataset audit 才能改变案例数据集。
 - 案例字段变更必须同步更新 Skill、MCP schema、下载资料包和测试。
 - 图片和原始材料的再分发权限必须单独记录。
 - `/api/health` 必须报告协议版本、数据集版本、案例数量和基础校验状态。

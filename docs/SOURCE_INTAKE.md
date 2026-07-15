@@ -98,3 +98,15 @@ curl -X PATCH "https://<your-domain>/api/source-intake?id=<record-id>" \
 - 完整但有大小上限的 `report_json`。
 
 这个切片不执行自动入库，因此不会直接改变案例数据集；“approved”只表示来源证据完成审核，不等于自动合并到 `lib/data.ts`。后续若增加自动入库，应在审核事件之后另设显式发布动作，并保持可回滚。
+
+## 生成发布候选
+
+可以把本地的 `source-report.json` 或目录交给发布候选脚本：
+
+```bash
+npm run source:proposal -- \
+  --input ./research-packs/source-intake \
+  --out ./research-packs/release-candidate
+```
+
+脚本会输出 `dataset-change-proposal.json` 和 Markdown 审阅包。所有来源无失败时状态为 `ready_for_manual_review`；任一来源失败、报告非法或案例重复时状态为 `blocked` 并以非零退出。候选文件明确声明 `autoPublish: false`、`datasetMutation: false` 和 `requiresPullRequest: true`，不会修改 `lib/data.ts`。
