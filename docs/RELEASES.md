@@ -2,6 +2,14 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Source evidence handoff release 25
+
+- Git commit：`10e23382e3e00a3a865910260792187072c3605e`
+- Sites：版本 25，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：`case:pack --source-report`，将来源 intake 报告作为可追溯证据接入资料包；未提供报告时保持原有三文件输出兼容。
+- 边界：只校验并携带来源报告，不自动生成事实、不替代编辑复核。
+- 验证：本地 22/22 测试、构建、lint、数据集审核和 GitHub CI 通过；线上 `/api/health` 与 MCP smoke 均通过。
+
 ## 2026-07-15 · Pipeline rerun fix release 23
 
 - Git commit：`68540b57abf85f5f338b6a76d551f15de646cc72`
