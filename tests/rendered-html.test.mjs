@@ -75,6 +75,8 @@ test("health endpoint exposes dataset and protocol readiness", async () => {
   assert.equal(body.dataset.kind, "curated-seed");
   assert.equal(body.checks.caseLibrary, "ok");
   assert.equal(body.mcp.auth, "none");
+  assert.equal(body.sourceIntake.auth, "none");
+  assert.equal(body.sourceIntake.writeEnabled, false);
 });
 
 test("source intake route fails closed when D1 is not bound", async () => {

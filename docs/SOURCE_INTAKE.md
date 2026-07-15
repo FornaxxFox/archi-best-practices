@@ -22,11 +22,13 @@ ARCHLENS_SOURCE_INTAKE_WRITE_ENABLED=true
 ARCHLENS_SOURCE_INTAKE_MAX_REPORT_BYTES=250000
 ```
 
-如果设置了 `ARCHLENS_MCP_TOKEN`，来源登记的 GET/POST 请求同样需要：
+如果设置了独立的 `ARCHLENS_SOURCE_INTAKE_TOKEN`，来源登记的 GET/POST 请求需要：
 
 ```text
 Authorization: Bearer <token>
 ```
+
+没有设置独立 token 时，接口会沿用 `ARCHLENS_MCP_TOKEN` 的鉴权配置；两个 token 都为空时，只有显式打开写入开关才会允许匿名写入。因此生产环境建议使用独立 token，公开 MCP 仍可保持无鉴权。
 
 公开 Demo 保持写入关闭；没有 D1 绑定时接口返回 503，不降级到浏览器存储或进程内 Map。
 

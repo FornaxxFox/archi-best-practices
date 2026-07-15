@@ -1,6 +1,8 @@
 export type McpRuntimeConfig = {
   authToken: string;
   authEnabled: boolean;
+  sourceIntakeToken: string;
+  sourceIntakeAuthEnabled: boolean;
   rateLimitPerMinute: number;
   sourceIntakeWriteEnabled: boolean;
   sourceIntakeMaxReportBytes: number;
@@ -21,9 +23,12 @@ function booleanEnv(value: string) {
 
 export function getMcpRuntimeConfig(): McpRuntimeConfig {
   const authToken = env("ARCHLENS_MCP_TOKEN");
+  const sourceIntakeToken = env("ARCHLENS_SOURCE_INTAKE_TOKEN");
   return {
     authToken,
     authEnabled: Boolean(authToken),
+    sourceIntakeToken,
+    sourceIntakeAuthEnabled: Boolean(sourceIntakeToken),
     rateLimitPerMinute: positiveInteger(env("ARCHLENS_MCP_RATE_LIMIT_PER_MINUTE"), 60),
     sourceIntakeWriteEnabled: booleanEnv(env("ARCHLENS_SOURCE_INTAKE_WRITE_ENABLED")),
     sourceIntakeMaxReportBytes: positiveInteger(env("ARCHLENS_SOURCE_INTAKE_MAX_REPORT_BYTES"), 250_000, 5_000_000),
@@ -36,5 +41,6 @@ export function hasValidMcpAuthorization(request: Request, config = getMcpRuntim
 }
 
 export function hasValidSourceIntakeAuthorization(request: Request, config = getMcpRuntimeConfig()) {
+  if (config.sourceIntakeAuthEnabled) return request.headers.get("authorization") === `Bearer ${config.sourceIntakeToken}`;
   return hasValidMcpAuthorization(request, config);
 }

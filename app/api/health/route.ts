@@ -26,7 +26,7 @@ export async function GET() {
     runtime: "demo",
     versions: { server: MCP_SERVER_VERSION, schema: MCP_SCHEMA_VERSION, protocol: MCP_PROTOCOL_VERSION },
     mcp: { auth: config.authEnabled ? "bearer" : "none", rateLimitPerMinute: config.rateLimitPerMinute },
-    sourceIntake: { storage: sourceIntakeStorage, writeEnabled: config.sourceIntakeWriteEnabled, maxReportBytes: config.sourceIntakeMaxReportBytes },
+    sourceIntake: { storage: sourceIntakeStorage, auth: config.sourceIntakeAuthEnabled || config.authEnabled ? "bearer" : "none", writeEnabled: config.sourceIntakeWriteEnabled, maxReportBytes: config.sourceIntakeMaxReportBytes },
     dataset: getDatasetManifest(),
     checks: { caseLibrary: cases.length > 0 ? "ok" : "failed", sourceIntake: sourceIntakeStorage },
   }, { headers: { "Cache-Control": "no-store" } });
