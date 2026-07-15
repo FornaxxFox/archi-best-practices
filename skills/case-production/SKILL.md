@@ -23,6 +23,7 @@ This workflow produces a case that can be displayed by ArchLens and exposed thro
 6. Run the source intake audit to capture page metadata and a bounded excerpt.
 7. Export `case.json`, `README.md`, and a research Markdown file.
 8. Run schema and source checks before publishing.
+9. If the research task is repeatable, start from a workflow manifest in `workflows/templates/` and keep the output source-cited.
 
 ## Executable handoff
 
@@ -57,6 +58,14 @@ npm run source:pipeline -- --input ./cases --out ./research-packs/source-intake
 Pipeline 按顺序处理目录中的 JSON，给每个案例写入 `source-report.json` 和 `source-notes.md`，并写入总的 `pipeline-report.json`。任何 schema 错误、重复 ID 或来源失败都会保留报告并以非零状态结束，不能静默进入发布环节。
 
 如果部署环境开启了 D1 来源登记，可以用 `npm run source:ingest -- --input ./research-packs/source-intake --endpoint https://<domain>/api/source-intake --token "$ARCHLENS_SOURCE_INTAKE_TOKEN"` 按顺序提交已复核的报告。这个步骤只持久化证据，不自动修改案例库，也不会触发隐藏的 AI 生成。
+
+先校验可复用的研究工作流模板：
+
+```bash
+npm run workflow:check
+```
+
+工作流 manifest 只描述用户自己的 Prompt、只读 MCP 调用、输出栏目和约束，不保存模型调用，也不会自动发布案例。模板说明见 [`workflows/README.md`](../../workflows/README.md)。
 
 ## Output schema
 

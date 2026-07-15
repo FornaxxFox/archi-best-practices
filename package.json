@@ -16,6 +16,7 @@
     "source:audit": "node scripts/source-intake.mjs",
     "source:pipeline": "node scripts/source-pipeline.mjs",
     "source:ingest": "node scripts/source-ingest.mjs",
+    "workflow:check": "node scripts/workflow-check.mjs",
     "dataset:audit": "node --experimental-strip-types scripts/dataset-audit.mjs --baseline docs/datasets/2026-07-15.1.json",
     "db:generate": "drizzle-kit generate"
   },

@@ -19,6 +19,7 @@ lib/
 scripts/
   source-intake.mjs      原始来源状态、元数据和有界摘录
   source-pipeline.mjs    目录级顺序处理、逐案例报告和总览门禁
+  workflow-check.mjs     用户自有研究工作流 manifest 校验
   dataset-audit.mjs      逐案例稳定哈希、变更审核和基线检查
 docs/datasets/            可审阅的数据集基线快照
 skills/
@@ -53,6 +54,7 @@ docs/                    项目理念、架构、路线图和协作说明
 - MCP Endpoint 对外暴露服务版本和 schema 版本，并统一 JSON-RPC 与工具业务错误。
 - 请求通过 request ID、耗时、限流响应头和结构化日志保持可定位；配置 D1 时限流 bucket 持久化到数据库，没有 D1 时才退回进程内尽力实现。
 - UI 只负责浏览、筛选、保存、下载和展示，不把推理成本藏在产品里。
+- 用户工作流以仓库内 manifest 形式存在，调用只读 MCP；ArchLens 不保存模型调用、不绑定模型供应商。
 - 案例字段变更必须同步更新 Skill、MCP schema、下载资料包和测试。
 - 图片和原始材料的再分发权限必须单独记录。
 - `/api/health` 必须报告协议版本、数据集版本、案例数量和基础校验状态。

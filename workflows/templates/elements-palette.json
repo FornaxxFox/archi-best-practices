@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "extract-elements-and-palette",
+  "title": "元素与颜色提取",
+  "description": "快速整理一个案例的空间元素、材料线索和颜色关系，作为设计研究索引。",
+  "prompt": "请把 MCP 返回的设计元素、颜色和材料整理成一张研究索引；说明每项是来源事实还是编辑性归纳，不要生成新的项目图像或材料结论。",
+  "steps": [
+    { "id": "extract", "tool": "extract_design_elements", "args": { "case_id": "{{case_id}}" }, "purpose": "读取元素、调色板、材料说明和迁移风险" },
+    { "id": "read-source", "tool": "get_case", "args": { "case_id": "{{case_id}}" }, "purpose": "回到案例来源和图像许可信息" }
+  ],
+  "output": { "format": "markdown", "sections": ["元素索引", "颜色与材料", "空间关系", "来源与许可", "迁移风险"], "citeSources": true },
+  "constraints": ["颜色 HEX 只作为研究索引，不代表精确现场测色。", "不下载或重新分发原始图像。", "不要把相似材料的推测写成项目已使用材料。"]
+}

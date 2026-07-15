@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "extract-design-thinking",
+  "title": "设计思路提取",
+  "description": "从一个案例的结构化资料和原始来源出发，提取可复核的设计判断。",
+  "prompt": "请基于 MCP 返回的案例资料，区分原始来源事实与 ArchLens 编辑性归纳，提取项目背景、核心理念、空间策略和研究问题，并为每个事实保留来源链接。",
+  "steps": [
+    { "id": "read-case", "tool": "get_case", "args": { "case_id": "{{case_id}}" }, "purpose": "获取案例原始结构化资料和来源链接" },
+    { "id": "extract-elements", "tool": "extract_design_elements", "args": { "case_id": "{{case_id}}" }, "purpose": "获取理念、策略、元素、材料和风险字段" },
+    { "id": "build-pack", "tool": "build_research_pack", "args": { "case_id": "{{case_id}}" }, "purpose": "保留一份可下载、可继续核验的资料包" }
+  ],
+  "output": { "format": "markdown", "sections": ["来源事实", "核心理念", "空间策略", "设计元素", "研究问题", "风险与局限"], "citeSources": true },
+  "constraints": ["不要把编辑性归纳写成事务所官方表述。", "不要补写 MCP 返回值中没有的项目事实。", "所有来源链接都应保留，结论应可回到原始页面复核。"]
+}
