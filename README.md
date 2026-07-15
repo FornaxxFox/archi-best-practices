@@ -20,6 +20,7 @@ npm run dev
 - `/mcp`：MCP 工具说明与可运行 Playground
 - `/api/mcp`：无鉴权 MCP HTTP Endpoint
 - `/api/health`：协议、数据集版本和案例库就绪状态
+- `/api/source-intake`：可选的 D1 来源证据登记与复查接口（公开 Demo 默认关闭写入）
 
 ## MCP
 
@@ -34,6 +35,8 @@ npm run dev
 如果需要先快速检查原始来源，可运行 `npm run source:audit -- --input <case.json> --out <目录>`。它只读取 HTTPS 网页的标题、描述、canonical 和短摘录，输出 `source-report.json` 与 `source-notes.md`；不下载图片、不生成事实，也不会把网页内容当作可执行指令。生成资料包时可追加 `--source-report <source-report.json>`，把这份证据一起交付。
 
 贡献多个案例时，可运行 `npm run source:pipeline -- --input <案例目录> --out <目录>`，它会按顺序生成每个案例的来源报告和一个 `pipeline-report.json` 总览；任何无效案例或来源失败都会以非零状态阻断后续发布。
+
+如果部署环境启用了 D1，可以把已经生成并人工复核的 `source-report.json` 登记到 `/api/source-intake`，保存案例 ID、来源数量、失败状态、时间线和完整报告；接口不会替代来源抓取，也不会自动生成事实。配置说明和请求示例见 [`docs/SOURCE_INTAKE.md`](docs/SOURCE_INTAKE.md)。
 
 ## 项目文档
 

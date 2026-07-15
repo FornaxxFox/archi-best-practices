@@ -77,6 +77,12 @@ test("health endpoint exposes dataset and protocol readiness", async () => {
   assert.equal(body.mcp.auth, "none");
 });
 
+test("source intake route fails closed when D1 is not bound", async () => {
+  const response = await render("/api/source-intake");
+  assert.equal(response.status, 503);
+  assert.match((await response.json()).error, /D1|数据表/);
+});
+
 test("MCP bearer auth is opt-in and preserves the public demo by default", async () => {
   const previousToken = process.env.ARCHLENS_MCP_TOKEN;
   try {

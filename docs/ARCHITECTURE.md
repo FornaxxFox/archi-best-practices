@@ -6,7 +6,11 @@
 app/
   ArchLensApp.tsx       产品界面与桌面端交互
   api/mcp/route.ts       MCP HTTP Endpoint
+  api/source-intake/    可选的 D1 来源证据登记与查询接口
   project/page.tsx       项目理念、任务与 Milestones
+db/
+  schema.ts              来源 intake 持久化表
+  index.ts               D1 绑定的最小访问边界
 lib/
   data.ts                案例资料、任务模板和展示元数据
   dataset.ts             数据集版本与数量清单
@@ -31,6 +35,8 @@ docs/                    项目理念、架构、路线图和协作说明
   → source:audit（只记录来源证据，不解释、不下载图片）
   → source:pipeline（批量来源报告与失败门禁）
   → case.json / Markdown / README
+  → 可选 POST /api/source-intake
+  → D1 source_intake_records（状态、摘要、完整报告与时间线）
   → lib/data.ts
   → dataset:audit + dataset manifest
   → 网站案例库 + 资料包下载
@@ -52,7 +58,8 @@ docs/                    项目理念、架构、路线图和协作说明
 - `/api/health` 必须报告协议版本、数据集版本、案例数量和基础校验状态。
 - 发布记录必须保留 Git commit、Sites 版本和可执行回滚目标。
 - MCP 鉴权通过运行时变量 opt-in，默认 Demo 不设置 token；密钥不能进入仓库或请求日志。
+- 来源 intake 写入通过独立运行时开关 opt-in；未配置 D1 或未开启写入时，接口 fail closed，不把浏览器本地存储冒充服务端持久化。
 
 ## 当前 Demo 的边界
 
-当前案例数据是本地精选种子数据，MCP 公开 Demo 默认无鉴权，工作区使用浏览器本地存储。来源 intake 已提供单案例的可复用抓取与解析入口，但还没有持久化队列、跨实例配额、审计存储和自动入库；这些属于 M4 生产化阶段。
+当前案例数据是本地精选种子数据，MCP 公开 Demo 默认无鉴权，工作区使用浏览器本地存储。来源 intake 已提供单案例/目录级抓取与解析入口，并新增可选 D1 证据登记；持久化队列、自动入库、跨实例配额和团队权限仍属于 M4 后续阶段。

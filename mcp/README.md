@@ -93,6 +93,8 @@ npm run case:pack -- --input ./case.json --out ./research-packs/my-case --source
 - `compare_cases`
 - `build_research_pack`
 
+来源证据登记不作为 MCP 工具自动写入；贡献者先用 CLI 生成并复核报告，再按 [`docs/SOURCE_INTAKE.md`](../docs/SOURCE_INTAKE.md) 选择性登记到 D1。这样 MCP 仍然只读取稳定的案例资料，避免把外部网页抓取或写入副作用隐藏在 Agent 调用里。
+
 ## 契约与错误
 
 - `GET /api/mcp` 返回 `version`、`schemaVersion`、`protocol` 和工具索引。
@@ -113,3 +115,5 @@ ARCHLENS_MCP_RATE_LIMIT_PER_MINUTE=120
 ```
 
 启用后，`/api/mcp` 要求 `Authorization: Bearer <token>`；`/api/health` 会只报告 `auth: "bearer"`，不会泄露 token。当前限流仍是单实例尽力实现，跨实例部署应替换为持久化配额服务。
+
+来源 intake 的 D1 登记是另一个显式开关：设置 `ARCHLENS_SOURCE_INTAKE_WRITE_ENABLED=true` 后，`POST /api/source-intake` 才会写入；如果同时设置了 `ARCHLENS_MCP_TOKEN`，登记请求也必须携带同一个 Bearer token。公开 Demo 默认关闭写入。
