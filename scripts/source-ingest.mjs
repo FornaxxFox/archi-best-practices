@@ -54,6 +54,7 @@ function validateReportShape(report, input) {
 
 export async function ingestReports({ input, endpoint: targetEndpoint, token = "", delayMs = DEFAULT_DELAY_MS, fetchImpl = fetch }) {
   const reports = await collectReports(input);
+  if (!reports.length) throw new Error("没有找到 source-report.json，拒绝空 ingest");
   const endpointUrl = endpoint(targetEndpoint);
   const results = [];
   for (const [index, reportPath] of reports.entries()) {

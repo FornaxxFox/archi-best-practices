@@ -35,3 +35,8 @@ test("source ingest keeps per-report failures and rejects insecure endpoints", a
   assert.match(result.results[0].error, /write disabled/);
   await assert.rejects(() => ingestReports({ input, endpoint: "http://example.org/api/source-intake", delayMs: 0 }), /HTTPS/);
 });
+
+test("source ingest rejects an empty input directory", async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "archlens-source-ingest-empty-"));
+  await assert.rejects(() => ingestReports({ input: tempDir, endpoint: "https://example.org/api/source-intake", delayMs: 0 }), /空 ingest/);
+});
