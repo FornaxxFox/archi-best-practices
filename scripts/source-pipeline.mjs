@@ -8,14 +8,19 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 const DEFAULT_MAX_BYTES = 1_000_000;
 const DEFAULT_DELAY_MS = 250;
 
-async function collectJsonFiles(input) {
+function isExcluded(candidate, excludedPath) {
+  return candidate === excludedPath || candidate.startsWith(`${excludedPath}${path.sep}`);
+}
+
+async function collectJsonFiles(input, excludedPath) {
+  if (isExcluded(input, excludedPath)) return [];
   const stat = await fs.stat(input);
   if (stat.isFile()) return [input];
   const entries = await fs.readdir(input, { withFileTypes: true });
   const files = [];
   for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
     const entryPath = path.join(input, entry.name);
-    if (entry.isDirectory()) files.push(...await collectJsonFiles(entryPath));
+    if (entry.isDirectory()) files.push(...await collectJsonFiles(entryPath, excludedPath));
     else if (entry.isFile() && entry.name.endsWith(".json")) files.push(entryPath);
   }
   return files;
@@ -28,7 +33,7 @@ function sourceFailureCount(report) {
 export async function runSourcePipeline({ input, out, timeoutMs = DEFAULT_TIMEOUT_MS, maxBytes = DEFAULT_MAX_BYTES, delayMs = DEFAULT_DELAY_MS, fetchImpl, now = () => new Date().toISOString() }) {
   const inputPath = path.resolve(input);
   const outputDir = path.resolve(out ?? path.join(inputPath, "source-intake"));
-  const files = await collectJsonFiles(inputPath);
+  const files = await collectJsonFiles(inputPath, outputDir);
   const reports = [];
   const errors = [];
   const seenIds = new Set();

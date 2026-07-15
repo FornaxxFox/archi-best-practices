@@ -53,3 +53,14 @@ test("source pipeline keeps invalid cases in the summary and fails the gate", as
   assert.equal(result.summary.invalidCaseCount, 1);
   assert.match(result.errors[0].message, /案例数据校验失败/);
 });
+
+test("source pipeline can be rerun when its default output is inside the input directory", async () => {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "archlens-source-pipeline-rerun-"));
+  await fs.writeFile(path.join(tempDir, "case.json"), JSON.stringify(caseJson("case-rerun")));
+  const options = { input: tempDir, delayMs: 0, now: () => "2026-07-15T00:00:00.000Z", fetchImpl: async () => new Response("<html><title>Fixture</title></html>", { headers: { "content-type": "text/html" }, status: 200 }) };
+  const first = await runSourcePipeline(options);
+  const second = await runSourcePipeline(options);
+  assert.equal(first.summary.status, "ok");
+  assert.equal(second.summary.status, "ok");
+  assert.equal(second.summary.caseCount, 1);
+});
