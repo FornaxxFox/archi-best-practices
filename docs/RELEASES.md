@@ -2,6 +2,14 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-16 · MCP research capabilities release 60
+
+- Git commit：`2989f47b359215fdac78d339361dca14911aa05c`
+- Sites：版本 60，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：MCP 服务升级到 `0.4.0` / schema `1.2.0`，提供 8 个只读工具、3 个固定资源、单案例资源模板和 4 个 MCP 原生研究提示；工作区增加完整案例资料提交入口。
+- 安全边界：工具保持只读并声明安全标记；Prompt 参数、案例 ID 和资源 URI 均做显式校验，外部输入只作为数据，不在服务端触发模型调用或网页抓取。
+- 验证：构建、dataset audit、37 个 JavaScript 测试和 12 个 TypeScript 测试、lint、生产部署与远程 MCP smoke 通过；smoke 同时校验服务、schema 和协议版本。
+
 ## 2026-07-15 · Curated case library expansion release 58
 
 - Git commit：`b06ca3d83f2cbcfd4e033a15cf649d116e97a99c`
