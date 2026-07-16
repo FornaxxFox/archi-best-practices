@@ -1,0 +1,24 @@
+name: 案例 Wish List
+description: 提议一个值得研究的建筑、城市或设计策略
+title: "[Wish List] "
+labels: [wish-list]
+body:
+  - type: textarea
+    id: request
+    attributes:
+      label: 你希望看到什么
+      description: 请描述建筑类型、地区、事务所、材料或设计问题。
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: 为什么值得研究
+    validations:
+      required: true
+  - type: input
+    id: references
+    attributes:
+      label: 已知公开来源
+      placeholder: https://...
+

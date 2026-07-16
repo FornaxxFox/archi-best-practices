@@ -1,0 +1,1 @@
+ALTER TABLE `workspace_members` ADD `expires_at` text;

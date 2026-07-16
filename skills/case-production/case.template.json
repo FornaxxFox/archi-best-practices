@@ -1,0 +1,28 @@
+{
+  "id": "replace-with-kebab-case-id",
+  "title": "项目名称",
+  "architect": "事务所或设计团队",
+  "location": "城市、国家",
+  "year": "完成年份或阶段",
+  "typology": "建筑/景观/规划类型",
+  "region": "亚洲/欧洲/中东/北美",
+  "scale": "面积、长度或尺度说明",
+  "projectType": "文化/公共/居住/规划/景观",
+  "image": "https://example.org/public-image.jpg",
+  "imageCredit": {
+    "label": "图片来源 / 许可",
+    "url": "https://example.org/image-license-page",
+    "license": "CC BY-SA 4.0"
+  },
+  "short": "一句话说明项目研究价值。",
+  "principle": "ArchLens 的编辑性归纳：项目试图解决什么问题？",
+  "strategy": "ArchLens 的编辑性归纳：空间、材料或系统如何工作？",
+  "elements": ["体量", "动线", "材料"],
+  "palette": [{ "name": "主色", "hex": "#6b7280" }],
+  "sources": [{ "label": "原始项目来源", "url": "https://example.org/project" }],
+  "risks": ["需要进一步核验的实施风险或不可复制条件"],
+  "tags": ["策略", "公共性"],
+  "context": "项目背景与场地条件，尽量只写可以回到来源核验的内容。",
+  "researchQuestions": ["这个案例最值得继续研究的问题是什么？"],
+  "materialNotes": "材料、光线、触感或构造线索。"
+}

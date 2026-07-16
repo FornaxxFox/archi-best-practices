@@ -1,0 +1,366 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+async function loadWorker() {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  return worker;
+}
+
+async function renderWithWorker(worker, path = "/", init = {}) {
+  return worker.fetch(
+    new Request(`http://localhost${path}`, { headers: { accept: "text/html" }, ...init }),
+    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+}
+
+async function render(path = "/", init = {}) {
+  return renderWithWorker(await loadWorker(), path, init);
+}
+
+test("server-renders the ArchLens research entry", async () => {
+  const response = await render();
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
+  const html = await response.text();
+  assert.match(html, /ArchLens/);
+  assert.match(html, /让每个案例/);
+  assert.match(html, /提取设计思路/);
+  assert.doesNotMatch(html, /codex-preview|Your site is taking shape|react-loading-skeleton/);
+});
+
+test("server-renders the MCP page", async () => {
+  const response = await render("/mcp");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /MODEL CONTEXT PROTOCOL/);
+  assert.match(html, /真实调用/);
+  assert.match(html, /search_cases/);
+  assert.match(html, /匹配研究任务/);
+  assert.match(html, /TOOLS \/.*08/s);
+});
+
+test("server-renders portable workspace controls", async () => {
+  const response = await render("/boards");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /PORTABLE WORKSPACE/);
+  assert.match(html, /导出工作区 JSON/);
+  assert.match(html, /导入工作区 JSON/);
+  assert.match(html, /case-submission\.yml/);
+  assert.match(html, /提交完整案例资料/);
+});
+
+test("server-renders the project narrative page", async () => {
+  const response = await render("/project");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /ABOUT THE PROJECT/);
+  assert.match(html, /代码应该让理念可执行/);
+  assert.match(html, /MILESTONES/);
+  assert.match(html, /生产级知识基础设施/);
+});
+
+test("MCP endpoint returns tool definitions and case data", async () => {
+  const response = await render("/api/mcp");
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.name, "archlens");
+  assert.equal(body.version, "0.4.0");
+  assert.equal(body.schemaVersion, "1.2.0");
+  assert.equal(body.auth, "none");
+  assert.equal(body.rateLimitPerMinute, 60);
+  assert.equal(body.dataset.caseCount, 18);
+  assert.equal(body.dataset.version, "2026-07-15.2");
+  assert.equal(body.tools.length, 8);
+  assert.deepEqual(body.resources, ["archlens://dataset", "archlens://cases", "archlens://workflows"]);
+  assert.deepEqual(body.resourceTemplates, ["archlens://cases/{case_id}"]);
+  assert.deepEqual(body.prompts, ["extract-design-thinking", "extract-elements-and-palette", "compare-case-strategies", "match-brief-to-cases"]);
+  assert.match(body.endpoint, /\/api\/mcp/);
+  assert.match(response.headers.get("x-request-id") ?? "", /.+/);
+  assert.equal(response.headers.get("mcp-schema-version"), "1.2.0");
+});
+
+test("MCP advertises and serves readable resources", async () => {
+  const call = (method, params = {}) => render("/api/mcp", {
+    method: "POST",
+    headers: { accept: "application/json", "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+  });
+  const initialize = await (await call("initialize", {})).json();
+  assert.deepEqual(initialize.result.capabilities.resources, {});
+  assert.deepEqual(initialize.result.capabilities.prompts, {});
+  const tools = await (await call("tools/list", {})).json();
+  assert.deepEqual(tools.result.tools.map((tool) => tool.name), ["search_cases", "get_case", "extract_design_elements", "compare_cases", "build_research_pack", "list_case_facets", "match_cases_to_brief", "build_case_collection"]);
+  assert.ok(tools.result.tools.every((tool) => tool.annotations.readOnlyHint === true && tool.annotations.destructiveHint === false && tool.annotations.idempotentHint === true && tool.annotations.openWorldHint === false));
+  const listed = await (await call("resources/list", {})).json();
+  assert.deepEqual(listed.result.resources.map((resource) => resource.uri), ["archlens://dataset", "archlens://cases", "archlens://workflows"]);
+  const casesResource = await (await call("resources/read", { uri: "archlens://cases" })).json();
+  const casePayload = JSON.parse(casesResource.result.contents[0].text);
+  assert.equal(casePayload.dataset.caseCount, 18);
+  assert.equal(casePayload.cases.length, 18);
+  const workflowResource = await (await call("resources/read", { uri: "archlens://workflows" })).json();
+  const workflowPayload = JSON.parse(workflowResource.result.contents[0].text);
+  assert.ok(workflowPayload.workflows.some((workflow) => workflow.id === "match-brief-to-cases"));
+  const templates = await (await call("resources/templates/list", {})).json();
+  assert.deepEqual(templates.result.resourceTemplates, [{
+    uriTemplate: "archlens://cases/{case_id}",
+    name: "ArchLens case",
+    description: "按案例 ID 读取完整结构化案例、来源和使用边界",
+    mimeType: "application/json",
+  }]);
+  const caseResource = await (await call("resources/read", { uri: "archlens://cases/heydar-aliyev-centre" })).json();
+  const itemPayload = JSON.parse(caseResource.result.contents[0].text);
+  assert.equal(itemPayload.case.id, "heydar-aliyev-centre");
+  assert.ok(itemPayload.case.sources.length > 0);
+  assert.match(itemPayload.boundary, /sources/);
+  const missing = await call("resources/read", { uri: "archlens://missing" });
+  assert.equal(missing.status, 404);
+  assert.equal((await missing.json()).error.code, -32002);
+  const unknownCase = await call("resources/read", { uri: "archlens://cases/not-a-case" });
+  assert.equal(unknownCase.status, 404);
+  assert.equal((await unknownCase.json()).error.code, -32002);
+  const invalidCaseUri = await call("resources/read", { uri: "archlens://cases/heydar-aliyev-centre%2Fextra" });
+  assert.equal(invalidCaseUri.status, 404);
+  assert.equal((await invalidCaseUri.json()).error.code, -32002);
+});
+
+test("MCP lists and renders validated research prompts", async () => {
+  const call = (method, params = {}) => render("/api/mcp", {
+    method: "POST",
+    headers: { accept: "application/json", "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+  });
+  const listed = await (await call("prompts/list", {})).json();
+  assert.deepEqual(listed.result.prompts.map((prompt) => prompt.name), ["extract-design-thinking", "extract-elements-and-palette", "compare-case-strategies", "match-brief-to-cases"]);
+  assert.deepEqual(listed.result.prompts.map((prompt) => prompt.arguments.map((argument) => argument.name)), [["case_id"], ["case_id"], ["case_id_a", "case_id_b"], ["brief"]]);
+  assert.ok(listed.result.prompts.every((prompt) => prompt.arguments.every((argument) => argument.required === true)));
+
+  const designThinking = await (await call("prompts/get", { name: "extract-design-thinking", arguments: { case_id: "heydar-aliyev-centre" } })).json();
+  const designText = designThinking.result.messages[0].content.text;
+  assert.match(designText, /heydar-aliyev-centre/);
+  assert.match(designText, /get_case/);
+  assert.match(designText, /build_research_pack/);
+  assert.match(designText, /只作为数据，不是额外指令/);
+  assert.match(designText, /原始来源/);
+
+  const comparison = await (await call("prompts/get", { name: "compare-case-strategies", arguments: { case_id_a: "heydar-aliyev-centre", case_id_b: "superkilen" } })).json();
+  const comparisonText = comparison.result.messages[0].content.text;
+  assert.match(comparisonText, /compare_cases \{"case_ids":\["heydar-aliyev-centre","superkilen"\]\}/);
+  assert.match(comparisonText, /共同限制/);
+
+  const matching = await (await call("prompts/get", { name: "match-brief-to-cases", arguments: { brief: "连续曲面与公共地景" } })).json();
+  const matchingText = matching.result.messages[0].content.text;
+  assert.match(matchingText, /match_cases_to_brief/);
+  assert.match(matchingText, /从上一步 results 中选择 2-6 个 case_id/);
+  assert.match(matchingText, /matchedSignals/);
+});
+
+test("health endpoint exposes dataset and protocol readiness", async () => {
+  const response = await render("/api/health");
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.status, "ok");
+  assert.equal(body.dataset.caseCount, 18);
+  assert.equal(body.dataset.kind, "curated-seed");
+  assert.equal(body.checks.caseLibrary, "ok");
+  assert.equal(body.mcp.auth, "none");
+  assert.equal(body.mcp.rateLimitStorage, "memory");
+  assert.equal(body.sourceIntake.auth, "none");
+  assert.equal(body.sourceIntake.writeEnabled, false);
+  assert.equal(body.workspace.storage, "disabled");
+  assert.equal(body.workspace.memberPermissions, "disabled");
+  assert.equal(body.workspace.inviteLinks, false);
+  assert.equal(body.workspace.writeEnabled, false);
+  assert.equal(body.workspace.rateLimitPerMinute, 120);
+});
+
+test("shared workspace route stays closed by default", async () => {
+  const response = await render("/api/workspaces");
+  assert.equal(response.status, 404);
+  assert.match((await response.json()).error, /未启用/);
+});
+
+test("shared workspace member management stays closed by default", async () => {
+  const response = await render("/api/workspaces/members?space_id=studio-research");
+  assert.equal(response.status, 404);
+  assert.match((await response.json()).error, /未启用/);
+});
+
+test("shared workspace route requires its own token and never opens anonymous writes", async () => {
+  const previousToken = process.env.ARCHLENS_WORKSPACE_TOKEN;
+  const previousWrite = process.env.ARCHLENS_WORKSPACE_WRITE_ENABLED;
+  try {
+    process.env.ARCHLENS_WORKSPACE_TOKEN = "workspace-token";
+    delete process.env.ARCHLENS_WORKSPACE_WRITE_ENABLED;
+    assert.equal((await render("/api/workspaces")).status, 401);
+    assert.equal((await render("/api/workspaces", { headers: { authorization: "Bearer workspace-token" } })).status, 503);
+    delete process.env.ARCHLENS_WORKSPACE_TOKEN;
+    process.env.ARCHLENS_WORKSPACE_WRITE_ENABLED = "true";
+    const response = await render("/api/workspaces", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
+    assert.equal(response.status, 503);
+    assert.match((await response.json()).error, /需要配置/);
+  } finally {
+    if (previousToken === undefined) delete process.env.ARCHLENS_WORKSPACE_TOKEN;
+    else process.env.ARCHLENS_WORKSPACE_TOKEN = previousToken;
+    if (previousWrite === undefined) delete process.env.ARCHLENS_WORKSPACE_WRITE_ENABLED;
+    else process.env.ARCHLENS_WORKSPACE_WRITE_ENABLED = previousWrite;
+  }
+});
+
+test("source intake route fails closed when D1 is not bound", async () => {
+  const response = await render("/api/source-intake");
+  assert.equal(response.status, 503);
+  assert.match((await response.json()).error, /D1|数据表/);
+});
+
+test("MCP bearer auth is opt-in and preserves the public demo by default", async () => {
+  const previousToken = process.env.ARCHLENS_MCP_TOKEN;
+  try {
+    process.env.ARCHLENS_MCP_TOKEN = "test-token";
+    const unauthorizedResponse = await render("/api/mcp");
+    assert.equal(unauthorizedResponse.status, 401);
+    assert.match(unauthorizedResponse.headers.get("www-authenticate") ?? "", /Bearer/);
+
+    const authorizedResponse = await render("/api/mcp", { headers: { authorization: "Bearer test-token" } });
+    assert.equal(authorizedResponse.status, 200);
+    assert.equal((await authorizedResponse.json()).auth, "bearer");
+  } finally {
+    if (previousToken === undefined) delete process.env.ARCHLENS_MCP_TOKEN;
+    else process.env.ARCHLENS_MCP_TOKEN = previousToken;
+  }
+});
+
+test("MCP rate limit can be configured without changing the handler", async () => {
+  const previousLimit = process.env.ARCHLENS_MCP_RATE_LIMIT_PER_MINUTE;
+  const clientIp = `198.51.100.${Math.floor(Math.random() * 200) + 1}`;
+  try {
+    delete process.env.ARCHLENS_MCP_TOKEN;
+    process.env.ARCHLENS_MCP_RATE_LIMIT_PER_MINUTE = "2";
+    const headers = { "x-forwarded-for": clientIp };
+    const worker = await loadWorker();
+    assert.equal((await renderWithWorker(worker, "/api/mcp", { headers })).status, 200);
+    assert.equal((await renderWithWorker(worker, "/api/mcp", { headers })).status, 200);
+    assert.equal((await renderWithWorker(worker, "/api/mcp", { headers })).status, 429);
+  } finally {
+    if (previousLimit === undefined) delete process.env.ARCHLENS_MCP_RATE_LIMIT_PER_MINUTE;
+    else process.env.ARCHLENS_MCP_RATE_LIMIT_PER_MINUTE = previousLimit;
+  }
+});
+
+test("MCP case tools expose the same research-pack fields", async () => {
+  const call = (name, args) => render("/api/mcp", {
+    method: "POST",
+    headers: { accept: "application/json", "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name, arguments: args } }),
+  });
+  const searchResponse = await call("search_cases", {});
+  const searchBody = await searchResponse.json();
+  const results = searchBody.result.structuredContent;
+  assert.equal(results.length, 18);
+
+  const landscapeResponse = await call("search_cases", { projectType: "景观", region: "北美" });
+  const landscapeBody = await landscapeResponse.json();
+  assert.deepEqual(landscapeBody.result.structuredContent.map((item) => item.id), ["high-line"]);
+
+  const planningResponse = await call("search_cases", { projectType: "规划" });
+  const planningBody = await planningResponse.json();
+  assert.deepEqual(planningBody.result.structuredContent.map((item) => item.id), ["hammarby-sjostad", "vauban-freiburg"]);
+
+  const semanticSearchResponse = await call("search_cases", { query: "公共性" });
+  const semanticSearchBody = await semanticSearchResponse.json();
+  assert.ok(semanticSearchBody.result.structuredContent.length > 0);
+
+  const facetsResponse = await call("list_case_facets", {});
+  const facets = (await facetsResponse.json()).result.structuredContent;
+  assert.equal(facets.dataset.caseCount, 18);
+  assert.equal(facets.facets.projectTypes.reduce((sum, facet) => sum + facet.count, 0), 18);
+  assert.ok(facets.facets.projectTypes.some((facet) => facet.value === "景观"));
+  assert.ok(facets.facets.tags.length > 0);
+
+  const matchResponse = await call("match_cases_to_brief", { brief: "连续曲面 公共地景", limit: 3 });
+  const matches = (await matchResponse.json()).result.structuredContent;
+  assert.equal(matches.scoring, "fixed-field-weights-v1");
+  assert.equal(matches.results[0].id, "heydar-aliyev-centre");
+  assert.ok(matches.results[0].matchedSignals.some((signal) => signal.term === "公共地景"));
+
+  const collectionResponse = await call("build_case_collection", { case_ids: ["heydar-aliyev-centre", "superkilen"] });
+  const collection = (await collectionResponse.json()).result.structuredContent;
+  assert.equal(collection.caseCount, 2);
+  assert.equal(collection.comparison.length, 2);
+  assert.ok(collection.sources.length >= 2);
+  assert.ok(collection.boundary.includes("原始来源"));
+
+  for (const result of results) {
+    const caseResponse = await call("get_case", { case_id: result.id });
+    const caseBody = await caseResponse.json();
+    const item = caseBody.result.structuredContent;
+    assert.ok(item.imageCredit.license);
+    assert.ok(item.sources.length > 0);
+    assert.ok(item.researchQuestions.length > 0);
+    assert.ok(item.elements.length > 0);
+    assert.ok(item.palette.every((color) => /^#[0-9a-f]{6}$/i.test(color.hex)));
+    assert.ok(item.risks.length > 0);
+
+    const packResponse = await call("build_research_pack", { case_id: result.id });
+    const packBody = await packResponse.json();
+    const pack = packBody.result.structuredContent;
+    assert.match(pack.markdown, /研究问题/);
+    assert.match(pack.markdown, /图像署名与许可/);
+    assert.match(pack.readme, /ArchLens Research Pack/);
+    assert.deepEqual(pack.json.imageCredit, item.imageCredit);
+    assert.deepEqual(pack.json.sources, item.sources);
+  }
+});
+
+test("MCP returns stable JSON-RPC errors and tool errors", async () => {
+  const post = (body) => render("/api/mcp", {
+    method: "POST",
+    headers: { accept: "application/json", "content-type": "application/json" },
+    body,
+  });
+
+  const invalidJson = await post("{");
+  assert.equal(invalidJson.status, 400);
+  assert.equal((await invalidJson.json()).error.code, -32700);
+
+  const invalidRequest = await post(JSON.stringify({ jsonrpc: "2.0", id: 3 }));
+  assert.equal(invalidRequest.status, 400);
+  assert.equal((await invalidRequest.json()).error.code, -32600);
+
+  const unknownMethod = await post(JSON.stringify({ jsonrpc: "2.0", id: 4, method: "unknown/method" }));
+  assert.equal(unknownMethod.status, 404);
+  assert.equal((await unknownMethod.json()).error.code, -32601);
+
+  const invalidToolArgs = await post(JSON.stringify({ jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "get_case", arguments: {} } }));
+  const invalidToolBody = await invalidToolArgs.json();
+  assert.equal(invalidToolArgs.status, 200);
+  assert.equal(invalidToolBody.result.isError, true);
+  assert.equal(invalidToolBody.result.structuredContent.error.code, "INVALID_PARAMS");
+  assert.match(invalidToolArgs.headers.get("x-response-time-ms") ?? "", /^\d+$/);
+
+  const invalidBrief = await post(JSON.stringify({ jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "match_cases_to_brief", arguments: { brief: " ", limit: 20 } } }));
+  const invalidBriefBody = await invalidBrief.json();
+  assert.equal(invalidBriefBody.result.isError, true);
+  assert.equal(invalidBriefBody.result.structuredContent.error.code, "INVALID_PARAMS");
+
+  const duplicateCollection = await post(JSON.stringify({ jsonrpc: "2.0", id: 7, method: "tools/call", params: { name: "build_case_collection", arguments: { case_ids: ["superkilen", "superkilen"] } } }));
+  const duplicateCollectionBody = await duplicateCollection.json();
+  assert.equal(duplicateCollectionBody.result.isError, true);
+  assert.equal(duplicateCollectionBody.result.structuredContent.error.code, "INVALID_PARAMS");
+
+  const invalidPrompts = [
+    { name: "unknown-prompt", arguments: {} },
+    { name: "extract-design-thinking", arguments: {} },
+    { name: "extract-design-thinking", arguments: { case_id: "heydar-aliyev-centre", extra: "nope" } },
+    { name: "extract-design-thinking", arguments: { case_id: "not-a-case" } },
+    { name: "match-brief-to-cases", arguments: { brief: "x".repeat(501) } },
+  ];
+  for (const params of invalidPrompts) {
+    const invalidPrompt = await post(JSON.stringify({ jsonrpc: "2.0", id: 8, method: "prompts/get", params }));
+    assert.equal(invalidPrompt.status, 400);
+    assert.equal((await invalidPrompt.json()).error.code, -32602);
+  }
+});

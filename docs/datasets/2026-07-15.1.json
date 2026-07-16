@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "1.0.0",
+  "name": "archlens-case-library",
+  "version": "2026-07-15.1",
+  "kind": "curated-seed",
+  "sourceOfTruth": "lib/data.ts",
+  "caseCount": 12,
+  "cases": [
+    {
+      "id": "8-house",
+      "title": "8 House",
+      "projectType": "居住",
+      "region": "欧洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://big.dk/projects/8-house-2021"
+      ],
+      "imageLicense": "CC BY 2.0",
+      "contentHash": "57b63e809b0a1ee716e02996cdeab217f1ec30da60fcf121fac742ab0f5b1dc1"
+    },
+    {
+      "id": "cheonggyecheon-restoration",
+      "title": "Cheonggyecheon Stream Restoration",
+      "projectType": "景观",
+      "region": "亚洲",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://english.seoul.go.kr/service/amusement/stream/1-cheonggyecheon/",
+        "https://english.seoul.go.kr/cheonggyecheon-stream-2/"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "6a9d6e947b15446c79126e534477966eb583d08854e5ad95c96db5ddfbb4e791"
+    },
+    {
+      "id": "chichu-art-museum",
+      "title": "Chichu Art Museum",
+      "projectType": "文化",
+      "region": "亚洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://benesse-artsite.jp/en/art/chichu.html"
+      ],
+      "imageLicense": "CC BY 2.5",
+      "contentHash": "752fb6712e23d62a822e3d20f6c7fd87d0d56f80dc8559bcc82e98330cedfe5b"
+    },
+    {
+      "id": "hammarby-sjostad",
+      "title": "Hammarby Sjöstad",
+      "projectType": "规划",
+      "region": "欧洲",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://www.hammarbysjostad.se/en/hammarby-sjostad/",
+        "https://vaxer.stockholm/omraden/stadsutvecklingsomraden/stadsutvecklingsomrade-hammarby-sjostad/"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "7425fdd37bc2e87e1465534901519527befe78f165b1d00fbeba1c69561f770f"
+    },
+    {
+      "id": "harbin-opera-house",
+      "title": "Harbin Opera House",
+      "projectType": "文化",
+      "region": "亚洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://www.i-mad.com/work/harbin-opera-house/"
+      ],
+      "imageLicense": "CC BY 2.0",
+      "contentHash": "ccbc574cf16a327d364d9ee4d6fa482bceebab8529ea0332f4c36febc8f2ace7"
+    },
+    {
+      "id": "heydar-aliyev-centre",
+      "title": "Heydar Aliyev Centre",
+      "projectType": "文化",
+      "region": "中东",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://www.zaha-hadid.com/architecture/heydar-aliyev-centre/"
+      ],
+      "imageLicense": "CC0",
+      "contentHash": "c9c38a32db92e6a882d7fd66957d60798068c2ecd107e59e8807e6774bcef91c"
+    },
+    {
+      "id": "high-line",
+      "title": "The High Line",
+      "projectType": "景观",
+      "region": "北美",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://www.fieldoperations.net/project/high-line",
+        "https://www.thehighline.org/"
+      ],
+      "imageLicense": "CC BY 4.0",
+      "contentHash": "9cd75eddf2f6a827607addda4917c02c34354b19226b8a3999ab016e6637baf8"
+    },
+    {
+      "id": "maxxi",
+      "title": "MAXXI: National Museum of XXI Century Arts",
+      "projectType": "文化",
+      "region": "欧洲",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://www.maxxi.art/en/",
+        "https://www.zaha-hadid.com/architecture/maxxi/"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "20b99c610d72db6b93afe56f06f2337a23568ac16fa8f8de5325d6d600116ace"
+    },
+    {
+      "id": "rolex-learning-centre",
+      "title": "Rolex Learning Center",
+      "projectType": "公共",
+      "region": "欧洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://www.epfl.ch/campus/visitors/en/rolex-learning-center/"
+      ],
+      "imageLicense": "CC BY-SA 3.0",
+      "contentHash": "9cb3d581514cdbbd931fc7c19bdd50c192a5686ffb9eaffba45fea3dbadf7c57"
+    },
+    {
+      "id": "sendai-mediatheque",
+      "title": "Sendai Mediatheque",
+      "projectType": "公共",
+      "region": "亚洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://www.smt.jp/en/"
+      ],
+      "imageLicense": "CC BY 2.0",
+      "contentHash": "71e0758b1565bbbf740f06cd22c09b31624bc3472874bbab88856477247cec56"
+    },
+    {
+      "id": "superkilen",
+      "title": "Superkilen",
+      "projectType": "景观",
+      "region": "欧洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://big.dk/projects/superkilen-1621"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "25587b82c77021183cb2c889588b7aec9002522bba29669e28974050a5a2b502"
+    },
+    {
+      "id": "vitra-fire-station",
+      "title": "Vitra Fire Station",
+      "projectType": "公共",
+      "region": "欧洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://www.zaha-hadid.com/architecture/vitra-fire-station/"
+      ],
+      "imageLicense": "CC0",
+      "contentHash": "2934fbf68ae41f880f231eae9e0e0d4e4517849119ef1182a93e502eea2b4bc1"
+    }
+  ]
+}

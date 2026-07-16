@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "compare-case-strategies",
+  "title": "案例策略比较",
+  "description": "对两个或多个案例进行结构化比较，强调可迁移条件而不是形式模仿。",
+  "prompt": "请使用 MCP 比较返回的案例，按问题、策略、元素、材料和风险建立对照表；标注哪些内容来自案例资料，哪些是你的比较判断，并说明迁移到新项目需要重新验证的条件。",
+  "steps": [
+    { "id": "compare", "tool": "compare_cases", "args": { "case_ids": ["{{case_id_a}}", "{{case_id_b}}"] }, "purpose": "读取案例之间可直接比较的结构化字段" },
+    { "id": "pack-a", "tool": "build_research_pack", "args": { "case_id": "{{case_id_a}}" }, "purpose": "保留第一个案例的完整研究资料包" },
+    { "id": "pack-b", "tool": "build_research_pack", "args": { "case_id": "{{case_id_b}}" }, "purpose": "保留第二个案例的完整研究资料包" }
+  ],
+  "output": { "format": "markdown", "sections": ["比较问题", "策略对照", "元素与材料", "共同限制", "迁移条件", "原始来源"], "citeSources": true },
+  "constraints": ["比较必须基于 MCP 返回字段，不要补写未提供的项目事实。", "迁移建议要说明气候、尺度、法规、维护或社会条件。", "不要把形式相似误判为策略相同。"]
+}

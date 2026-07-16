@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "match-brief-to-cases",
+  "title": "研究任务案例匹配",
+  "description": "从设计研究任务出发，发现匹配案例并生成带来源的多案例研究集合。",
+  "prompt": "请先读取可用分类，再用研究任务匹配案例；只使用 MCP 返回的匹配信号解释选择，最后生成案例集合并保留全部来源。",
+  "steps": [
+    { "id": "list-facets", "tool": "list_case_facets", "args": {}, "purpose": "确认当前数据集支持的类型、地域、标签和元素" },
+    { "id": "match-brief", "tool": "match_cases_to_brief", "args": { "brief": "{{brief}}", "limit": 4 }, "purpose": "用固定权重获得可解释的候选案例" },
+    { "id": "build-collection", "tool": "build_case_collection", "args": { "case_ids": ["{{case_id_a}}", "{{case_id_b}}"] }, "purpose": "汇总比较字段、研究问题、风险和来源" }
+  ],
+  "output": { "format": "markdown", "sections": ["任务约束", "匹配依据", "候选案例", "比较矩阵", "研究问题", "风险与局限", "原始来源"], "citeSources": true },
+  "constraints": ["不得把固定权重匹配描述为模型理解或专业推荐。", "案例选择理由必须来自 matchedSignals。", "所有事实和编辑性归纳都要保留原始来源与边界说明。"]
+}

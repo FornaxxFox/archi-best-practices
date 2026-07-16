@@ -1,0 +1,75 @@
+# ArchLens 代码与架构
+
+## 代码地图
+
+```text
+app/
+  ArchLensApp.tsx       产品界面与桌面端交互
+  api/mcp/route.ts       MCP HTTP Endpoint
+  api/source-intake/    可选的 D1 来源证据登记与查询接口
+  api/workspaces/       可选的 D1 共享工作区接口
+  project/page.tsx       项目理念、任务与 Milestones
+db/
+  schema.ts              来源 intake 持久化表
+  index.ts               D1 绑定的最小访问边界
+lib/
+  data.ts                案例资料、任务模板和展示元数据
+  dataset.ts             数据集版本与数量清单
+  dataset-meta.ts        数据集版本常量（供运行时和 CLI 共用）
+  mcp.ts                 MCP 工具、资源定义与只读领域逻辑
+scripts/
+  source-intake.mjs      原始来源状态、元数据和有界摘录
+  source-pipeline.mjs    目录级顺序处理、逐案例报告和总览门禁
+  workflow-check.mjs     用户自有研究工作流 manifest 校验
+  source-proposal.mjs    来源证据到人工发布候选的显式门禁
+  dataset-audit.mjs      逐案例稳定哈希、变更审核和基线检查
+lib/workspace.ts         可移交工作区快照 schema 与校验
+docs/datasets/            可审阅的数据集基线快照
+skills/
+  case-production/       案例生产 Skill
+docs/                    项目理念、架构、路线图和协作说明
+.github/                 案例提交与 Wish List 模板
+```
+
+## 数据流
+
+```text
+公开原始资料
+  → 案例生产 Skill
+  → source:audit（只记录来源证据，不解释、不下载图片）
+  → source:pipeline（批量来源报告与失败门禁）
+  → case.json / Markdown / README
+  → 可选 POST /api/source-intake
+  → D1 source_intake_records + source_intake_review_events（状态、摘要、完整报告与审核时间线）
+  → lib/data.ts
+  → dataset:audit + dataset manifest
+  → 网站案例库 + 资料包下载
+  → lib/mcp.ts
+  → MCP contract / validation / observability / dataset manifest
+  → /api/mcp
+  → 用户自己的 Agent / 模型
+```
+
+## 设计约束
+
+- 网站与模型供应商解耦。
+- MCP 返回结构化内容，同时保留来源链接。
+- MCP Endpoint 对外暴露服务版本和 schema 版本，并统一 JSON-RPC 与工具业务错误；资源能力必须同时实现固定资源、按案例资源模板和读取方法，研究工作流同时通过 MCP 原生 Prompts 暴露。
+- 任务匹配只使用可解释的固定字段权重并返回匹配信号，不冒充模型推理或专业推荐。
+- 请求通过 request ID、耗时、限流响应头和结构化日志保持可定位；配置 D1 时限流 bucket 持久化到数据库，没有 D1 时才退回进程内尽力实现。
+- UI 只负责浏览、筛选、保存、下载和展示，不把推理成本藏在产品里。
+- 用户工作流以仓库内 manifest 形式存在，调用只读 MCP；ArchLens 不保存模型调用、不绑定模型供应商。
+- 工作区快照包含数据集版本、收藏、评分和最近研究任务；导入只恢复当前浏览器状态，不向服务端写入数据。
+- 来源审核通过后只能生成发布候选，必须经过人工 PR 和 dataset audit 才能改变案例数据集。
+- D1 共享工作区只有在独立 `ARCHLENS_WORKSPACE_TOKEN` 与 `ARCHLENS_WORKSPACE_WRITE_ENABLED=true` 同时配置时才可写；公开 Demo 默认关闭。operator 可以签发带过期时间的 editor/viewer 一次性成员 token，成员访问按空间和角色校验，并由按操作类型和角色计算的独立 D1 quota bucket 限制请求频率；可选邀请链接把 token 放在 fragment，由用户主动同步。
+- 案例字段变更必须同步更新 Skill、MCP schema、下载资料包和测试。
+- 图片和原始材料的再分发权限必须单独记录。
+- `/api/health` 必须报告协议版本、数据集版本、案例数量和基础校验状态。
+- 发布记录必须保留 Git commit、Sites 版本和可执行回滚目标。
+- MCP 鉴权通过运行时变量 opt-in，默认 Demo 不设置 token；密钥不能进入仓库或请求日志。
+- 来源 intake 写入通过独立运行时开关 opt-in；未配置 D1 或未开启写入时，接口 fail closed，不把浏览器本地存储冒充服务端持久化。
+- `approved` 只代表来源证据完成审核，不自动改变 `lib/data.ts`；案例发布仍需显式 PR 和 dataset audit。
+
+## 当前 Demo 的边界
+
+当前案例数据是本地精选种子数据，MCP 公开 Demo 默认无鉴权，工作区默认使用浏览器本地存储，也可以导出为带数据集版本的 JSON 快照。来源 intake 已提供单案例/目录级抓取与解析入口、可复用的 GitHub 定时 workflow，并新增可选 D1 证据登记和带成员角色/审计/过期控制/配额/邀请链接的 operator-token 共享空间；自动入库和更复杂的配额治理仍属于 M4 后续阶段。

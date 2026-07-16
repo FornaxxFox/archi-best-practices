@@ -1,0 +1,236 @@
+{
+  "schemaVersion": "1.0.0",
+  "name": "archlens-case-library",
+  "version": "2026-07-15.2",
+  "kind": "curated-seed",
+  "sourceOfTruth": "lib/data.ts",
+  "caseCount": 18,
+  "cases": [
+    {
+      "id": "8-house",
+      "title": "8 House",
+      "projectType": "居住",
+      "region": "欧洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://big.dk/projects/8-house-2021"
+      ],
+      "imageLicense": "CC BY 2.0",
+      "contentHash": "57b63e809b0a1ee716e02996cdeab217f1ec30da60fcf121fac742ab0f5b1dc1"
+    },
+    {
+      "id": "barcelona-pavilion",
+      "title": "Barcelona Pavilion",
+      "projectType": "文化",
+      "region": "欧洲",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://miesbcn.com/the-pavilion/",
+        "https://www.barcelona.cat/en/discoverbcn/pics/el-pabellon-mies-van-der-rohe-96243111030"
+      ],
+      "imageLicense": "CC BY 3.0",
+      "contentHash": "df7fbbc60f3a363ca23dc2a58031781f20c7efc9a346460d324958c32bf9c742"
+    },
+    {
+      "id": "benthemplein-water-square",
+      "title": "Benthemplein Water Square",
+      "projectType": "景观",
+      "region": "欧洲",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://www.urbanisten.nl/work/benthemplein",
+        "https://www.publicspace.org/works/-/project/h034-water-square-in-benthemplein"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "87912f745b4834ac395da3172fd05f09d634daaf6f96f4f92aae6e8045bc6047"
+    },
+    {
+      "id": "cheonggyecheon-restoration",
+      "title": "Cheonggyecheon Stream Restoration",
+      "projectType": "景观",
+      "region": "亚洲",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://english.seoul.go.kr/service/amusement/stream/1-cheonggyecheon/",
+        "https://english.seoul.go.kr/cheonggyecheon-stream-2/"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "6a9d6e947b15446c79126e534477966eb583d08854e5ad95c96db5ddfbb4e791"
+    },
+    {
+      "id": "chichu-art-museum",
+      "title": "Chichu Art Museum",
+      "projectType": "文化",
+      "region": "亚洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://benesse-artsite.jp/en/art/chichu.html"
+      ],
+      "imageLicense": "CC BY 2.5",
+      "contentHash": "752fb6712e23d62a822e3d20f6c7fd87d0d56f80dc8559bcc82e98330cedfe5b"
+    },
+    {
+      "id": "hammarby-sjostad",
+      "title": "Hammarby Sjöstad",
+      "projectType": "规划",
+      "region": "欧洲",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://www.hammarbysjostad.se/en/hammarby-sjostad/",
+        "https://vaxer.stockholm/omraden/stadsutvecklingsomraden/stadsutvecklingsomrade-hammarby-sjostad/"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "7425fdd37bc2e87e1465534901519527befe78f165b1d00fbeba1c69561f770f"
+    },
+    {
+      "id": "harbin-opera-house",
+      "title": "Harbin Opera House",
+      "projectType": "文化",
+      "region": "亚洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://www.i-mad.com/work/harbin-opera-house/"
+      ],
+      "imageLicense": "CC BY 2.0",
+      "contentHash": "ccbc574cf16a327d364d9ee4d6fa482bceebab8529ea0332f4c36febc8f2ace7"
+    },
+    {
+      "id": "heydar-aliyev-centre",
+      "title": "Heydar Aliyev Centre",
+      "projectType": "文化",
+      "region": "中东",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://www.zaha-hadid.com/architecture/heydar-aliyev-centre/"
+      ],
+      "imageLicense": "CC0",
+      "contentHash": "c9c38a32db92e6a882d7fd66957d60798068c2ecd107e59e8807e6774bcef91c"
+    },
+    {
+      "id": "high-line",
+      "title": "The High Line",
+      "projectType": "景观",
+      "region": "北美",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://www.fieldoperations.net/project/high-line",
+        "https://www.thehighline.org/"
+      ],
+      "imageLicense": "CC BY 4.0",
+      "contentHash": "9cd75eddf2f6a827607addda4917c02c34354b19226b8a3999ab016e6637baf8"
+    },
+    {
+      "id": "kimbell-art-museum",
+      "title": "Kimbell Art Museum",
+      "projectType": "文化",
+      "region": "北美",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://kimbellart.org/art-architecture/architecture/kahn-building",
+        "https://kimbellart.org/art-architecture/architecture"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "3d6ce07a66896737a560b03774885ac609c5ff42ec7f68f22f3593ff29e2a32b"
+    },
+    {
+      "id": "maxxi",
+      "title": "MAXXI: National Museum of XXI Century Arts",
+      "projectType": "文化",
+      "region": "欧洲",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://www.maxxi.art/en/",
+        "https://www.zaha-hadid.com/architecture/maxxi/"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "20b99c610d72db6b93afe56f06f2337a23568ac16fa8f8de5325d6d600116ace"
+    },
+    {
+      "id": "rolex-learning-centre",
+      "title": "Rolex Learning Center",
+      "projectType": "公共",
+      "region": "欧洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://www.epfl.ch/campus/visitors/en/rolex-learning-center/"
+      ],
+      "imageLicense": "CC BY-SA 3.0",
+      "contentHash": "9cb3d581514cdbbd931fc7c19bdd50c192a5686ffb9eaffba45fea3dbadf7c57"
+    },
+    {
+      "id": "salk-institute",
+      "title": "Salk Institute",
+      "projectType": "公共",
+      "region": "北美",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://www.salk.edu/about/about-salk-architecture/",
+        "https://www.salk.edu/explore-salk-architecture-guide/"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "a6550b1a64fe7cc8d970f39bd6126b5b37aa3a2fefa50c22a84070a8da1d27fc"
+    },
+    {
+      "id": "sendai-mediatheque",
+      "title": "Sendai Mediatheque",
+      "projectType": "公共",
+      "region": "亚洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://www.smt.jp/en/"
+      ],
+      "imageLicense": "CC BY 2.0",
+      "contentHash": "71e0758b1565bbbf740f06cd22c09b31624bc3472874bbab88856477247cec56"
+    },
+    {
+      "id": "superkilen",
+      "title": "Superkilen",
+      "projectType": "景观",
+      "region": "欧洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://big.dk/projects/superkilen-1621"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "25587b82c77021183cb2c889588b7aec9002522bba29669e28974050a5a2b502"
+    },
+    {
+      "id": "therme-vals",
+      "title": "Therme Vals",
+      "projectType": "公共",
+      "region": "欧洲",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://vals.ch/en/enjoy/wellness/7132-therme/",
+        "https://zumthor.org/project/therme/"
+      ],
+      "imageLicense": "CC BY-SA 4.0",
+      "contentHash": "ee96ee83ec464cfa96a8e995465ed32b124da997f239a0bb84e5236a32c4eb81"
+    },
+    {
+      "id": "vauban-freiburg",
+      "title": "Vauban District",
+      "projectType": "规划",
+      "region": "欧洲",
+      "sourceCount": 2,
+      "sourceUrls": [
+        "https://www.freiburg.de/pb/site/Freiburg/get/params_E-1604864046/647919/Infotafeln_Vauban_en.pdf",
+        "https://www.freiburg.de/pb/%2CLde_DE/208732.html"
+      ],
+      "imageLicense": "CC0",
+      "contentHash": "da023adbc9e4cf2292087ab8351790fbeb5390cf5cd9f6a61951fa1dae4ad385"
+    },
+    {
+      "id": "vitra-fire-station",
+      "title": "Vitra Fire Station",
+      "projectType": "公共",
+      "region": "欧洲",
+      "sourceCount": 1,
+      "sourceUrls": [
+        "https://www.zaha-hadid.com/architecture/vitra-fire-station/"
+      ],
+      "imageLicense": "CC0",
+      "contentHash": "2934fbf68ae41f880f231eae9e0e0d4e4517849119ef1182a93e502eea2b4bc1"
+    }
+  ]
+}
