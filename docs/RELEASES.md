@@ -2,6 +2,15 @@
 
 本文件记录可验证的发布点。回滚时应选择已保存且经过验证的 Sites 版本，不要直接用未验证的本地构建覆盖线上版本。
 
+## 2026-07-15 · Curated case library expansion release 58
+
+- Git commit：`b06ca3d83f2cbcfd4e033a15cf649d116e97a99c`
+- Sites：版本 58，生产地址 <https://archlens.yiking233.chatgpt.site>
+- 新增：Salk Institute、Barcelona Pavilion、Kimbell Art Museum、Therme Vals、Benthemplein Water Square、Vauban District 六个真实案例，覆盖光与结构、材料、身体感知、雨洪适应和街区治理。
+- 数据集：版本 `2026-07-15.2`，18 个案例；新增案例均包含官方项目来源、结构化研究字段和可复用图片的 Wikimedia 许可信息。
+- 边界：理念、策略和风险仍标记为 ArchLens 编辑性归纳；原始来源、图片许可和事实应回到来源页面复核。
+- 验证：构建、dataset audit、35 个 JavaScript 测试和 12 个 TypeScript 测试、lint、GitHub CI、生产 health、18 案例 MCP smoke 和新增资料包路径通过。
+
 ## 2026-07-15 · Workspace quota policy release 56
 
 - Git commit：`2d791a5a4889b90a61d1480c152f7b42db037b59`
